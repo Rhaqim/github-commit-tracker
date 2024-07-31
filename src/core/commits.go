@@ -84,7 +84,7 @@ func GetEvent() error {
 
 	var commitEvent *event.EventQueue = event.NewEventQueue("repo-event")
 
-	commitEvent.Subscribe(func(event event.Event) {
+	commitEvent.Subscribe(func(event types.Event) {
 		fmt.Println("Got event: ", event)
 		// process commit data
 		err := CommitData(event.Owner, event.Repo)

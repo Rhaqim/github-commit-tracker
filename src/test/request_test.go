@@ -2,6 +2,7 @@ package test
 
 import (
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"savannahtech/src/core"
@@ -10,20 +11,37 @@ import (
 )
 
 // Mock version of MakeRequest
-func mockMakeRequest(url string) (*http.Response, error) {
+func mockMakeRequest(url string) ([]byte, error) {
 	// Check for a specific test URL to simulate different responses
 	if url == "https://api.github.com/repos/testowner/testrepo/commits" {
 		recorder := httptest.NewRecorder()
 		recorder.WriteHeader(http.StatusOK)
 		recorder.WriteString(`[{"sha": "abc123"}]`)
-		return recorder.Result(), nil
+
+		// Return the response body and any error
+		result := recorder.Result()
+
+		body, err := io.ReadAll(result.Body)
+		if err != nil {
+			return nil, err
+		}
+
+		return body, nil
 	}
 
 	if url == "https://api.github.com/repos/testowner/testrepo" {
 		recorder := httptest.NewRecorder()
 		recorder.WriteHeader(http.StatusOK)
 		recorder.WriteString(`{"id": "12345"}`)
-		return recorder.Result(), nil
+
+		result := recorder.Result()
+
+		body, err := io.ReadAll(result.Body)
+		if err != nil {
+			return nil, err
+		}
+
+		return body, nil
 	}
 
 	return nil, errors.New("error making request")
@@ -54,7 +72,7 @@ func TestFetchRepo(t *testing.T) {
 }
 
 func TestFetchDataError(t *testing.T) {
-	failingMakeRequest := func(url string) (*http.Response, error) {
+	failingMakeRequest := func(url string) ([]byte, error) {
 		return nil, errors.New("failed to make request")
 	}
 

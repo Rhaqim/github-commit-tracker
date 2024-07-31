@@ -1,0 +1,16 @@
+package types
+
+type EventType string
+
+const (
+	CommitEvent EventType = "commit"
+	RepoEvent   EventType = "repo"
+)
+
+type Event struct {
+	ID      string    `json:"id"`
+	Message string    `json:"message"`
+	Type    EventType `json:"type"`
+	Owner   string    `json:"owner"`
+	Repo    string    `json:"repo"`
+}

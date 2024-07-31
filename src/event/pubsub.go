@@ -5,24 +5,10 @@ import (
 	"encoding/json"
 	"log"
 	"savannahtech/src/database"
+	"savannahtech/src/types"
 
 	"github.com/google/uuid"
 )
-
-type EventType string
-
-const (
-	CommitEvent EventType = "commit"
-	RepoEvent   EventType = "repo"
-)
-
-type Event struct {
-	ID      string    `json:"id"`
-	Message string    `json:"message"`
-	Type    EventType `json:"type"`
-	Owner   string    `json:"owner"`
-	Repo    string    `json:"repo"`
-}
 
 type EventQueue struct {
 	Key string
@@ -36,7 +22,7 @@ func NewEventQueue(key string) *EventQueue {
 	}
 }
 
-func (q *EventQueue) Publish(event Event) error {
+func (q *EventQueue) Publish(event types.Event) error {
 	event.ID = uuid.New().String()
 
 	eventData, err := json.Marshal(event)
@@ -47,12 +33,12 @@ func (q *EventQueue) Publish(event Event) error {
 	return database.Redis.Publish(q.ctx, q.Key, eventData).Err()
 }
 
-func (q *EventQueue) Subscribe(handler func(event Event)) error {
+func (q *EventQueue) Subscribe(handler func(event types.Event)) error {
 	sub := database.Redis.Subscribe(q.ctx, q.Key)
 	ch := sub.Channel()
 
 	for msg := range ch {
-		var event Event
+		var event types.Event
 		err := json.Unmarshal([]byte(msg.Payload), &event)
 		if err != nil {
 			log.Printf("Failed to unmarshal event: %v", err)

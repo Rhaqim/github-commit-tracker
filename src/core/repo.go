@@ -14,19 +14,9 @@ func FetchRepo(owner, repo string, makeRequest types.RequestFunc) ([]byte, error
 	return utils.FetchData(url, makeRequest)
 }
 
-func processRepository(repo types.Repository) error {
-	repoStore := model.RepositoryStore{
-		Name:            repo.Name,
-		Description:     repo.Description,
-		URL:             repo.URL,
-		Language:        repo.Language,
-		StargazersCount: repo.StargazersCount,
-		WatchersCount:   repo.WatchersCount,
-		ForksCount:      repo.ForksCount,
-		RepoCreatedAt:   repo.CreatedAt,
-		RepoUpdatedAt:   repo.UpdatedAt,
-	}
-	return repoStore.InsertRepository()
+func processRepository(repo model.RepositoryStore) error {
+
+	return repo.InsertRepository()
 }
 
 func fetchAndProcessData[T any](owner, repo string, fetchFunc func(string, string, types.RequestFunc) ([]byte, error), processFunc func(T) error) error {
@@ -52,16 +42,16 @@ func fetchAndProcessData[T any](owner, repo string, fetchFunc func(string, strin
 }
 
 func RepositoryData(owner, repo string) error {
-	err := fetchAndProcessData[types.Repository](owner, repo, FetchRepo, processRepository)
+	err := fetchAndProcessData[model.RepositoryStore](owner, repo, FetchRepo, processRepository)
 	if err != nil {
 		return err
 	}
 
 	// publish event to redis
 	var repoEvent *event.EventQueue = event.NewEventQueue("repo-event")
-	repoEvent.Publish(event.Event{
+	repoEvent.Publish(types.Event{
 		Message: "Repository data fetched",
-		Type:    event.RepoEvent,
+		Type:    types.RepoEvent,
 		Owner:   owner,
 		Repo:    repo,
 	})
