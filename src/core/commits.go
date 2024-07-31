@@ -8,11 +8,14 @@ import (
 	"savannahtech/src/types"
 	"savannahtech/src/utils"
 	"sync"
+
+	"github.com/google/uuid"
 )
 
 // Generalized function to fetch and process data
 func FetchAndProcessData[T any](owner, repo string, fetchFunc func(string, string, types.RequestFunc[T]) ([]T, error), processFunc func(T) error) error {
 	var wg sync.WaitGroup
+	var commitQueue *event.EventQueue = event.NewEventQueue("commit-event")
 
 	var data []T
 
@@ -41,6 +44,16 @@ func FetchAndProcessData[T any](owner, repo string, fetchFunc func(string, strin
 			return fmt.Errorf("failed to process data: %w", err)
 		}
 	}
+
+	log.Println("Finished processing commits")
+
+	commitQueue.Publish(types.Event{
+		ID:      uuid.New().String(),
+		Message: "Commit data fetched",
+		Type:    types.CommitEvent,
+		Owner:   owner,
+		Repo:    repo,
+	})
 
 	return nil
 }
@@ -78,7 +91,7 @@ func GetEvent() error {
 	var commitEvent *event.EventQueue = event.NewEventQueue("repo-event")
 
 	commitEvent.Subscribe(func(event types.Event) {
-		log.Println("Got event: ", event)
+		log.Println("Retrieved event: ", event)
 		// process commit data
 		err := CommitData(event.Owner, event.Repo)
 		if err != nil {

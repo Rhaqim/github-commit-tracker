@@ -14,7 +14,7 @@ func NewRouter() *gin.Engine {
 	// Define your API routes here
 	r.GET("/api/repositories/:owner/:repo", api.GetRepo)
 
-	r.GET("/api/commits/:owner/:repo", api.GetCommit)
+	// r.GET("/api/commits/:owner/:repo", api.GetCommit)
 	r.GET("api/commits", api.GetCommits)
 
 	return r
