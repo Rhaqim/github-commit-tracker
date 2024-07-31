@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"savannahtech/src/database"
+	"savannahtech/src/event"
+	"savannahtech/src/types"
 	"time"
 
 	"gorm.io/gorm"
@@ -87,7 +89,17 @@ func SaveCommitToDB(db *gorm.DB, commit CommitStore) error {
 	return db.Create(&commit).Error
 }
 
+func PeriodFetch() {
+	var commitQueue *event.EventQueue = event.NewEventQueue("commit-event")
+
+	commitQueue.Subscribe(func(event types.Event) {
+		log.Printf("Commit event received: %v", event)
+		PeriodicFetch("", 1*time.Hour, database.DB)
+	})
+}
+
 func PeriodicFetch(repoURL string, interval time.Duration, db *gorm.DB) {
+
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 
