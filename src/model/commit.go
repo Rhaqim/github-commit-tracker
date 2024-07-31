@@ -1,6 +1,8 @@
 package model
 
 import (
+	"fmt"
+	"log"
 	"savannahtech/src/database"
 	"time"
 
@@ -73,4 +75,42 @@ func (C *CommitStore) GetCommits() ([]CommitStore, error) {
 	}
 
 	return commits, nil
+}
+
+func GetLastCommitSHA(db *gorm.DB) string {
+	var lastCommit CommitStore
+	db.Order("date desc").First(&lastCommit)
+	return lastCommit.SHA
+}
+
+func SaveCommitToDB(db *gorm.DB, commit CommitStore) error {
+	return db.Create(&commit).Error
+}
+
+func PeriodicFetch(repoURL string, interval time.Duration, db *gorm.DB) {
+	ticker := time.NewTicker(interval)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+			lastCommitSHA := GetLastCommitSHA(db)
+			_ = fmt.Sprintf("%s/commits?since=%s", repoURL, lastCommitSHA)
+
+			var commits []CommitStore
+
+			// commits, err := FetchCommits(commitsURL, MakeRequest)
+			// if err != nil {
+			// 	log.Printf("Error fetching commits: %v", err)
+			// 	continue
+			// }
+
+			// Save new commits to the database
+			for _, commit := range commits {
+				if err := SaveCommitToDB(db, commit); err != nil {
+					log.Printf("Error saving commit to database: %v", err)
+				}
+			}
+		}
+	}
 }
