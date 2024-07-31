@@ -16,7 +16,10 @@ func main() {
 	database.Init()
 	defer database.Close()
 
-	model.Migrations()
+	err := model.Migrations()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// Initialize the cache
 	database.CacheInit()

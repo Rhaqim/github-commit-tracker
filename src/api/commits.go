@@ -20,11 +20,12 @@ func GetCommit(c *gin.Context) {
 func GetCommits(c *gin.Context) {
 	var commit model.CommitStore
 
-	if err := commit.GetCommits(); err != nil {
+	commits, err := commit.GetCommits()
+	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(200, gin.H{"commits": commit})
+	c.JSON(200, gin.H{"commits": commits})
 
 }

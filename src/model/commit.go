@@ -1,7 +1,6 @@
 package model
 
 import (
-	"fmt"
 	"savannahtech/src/database"
 	"time"
 
@@ -10,6 +9,7 @@ import (
 
 type CommitStore struct {
 	gorm.Model
+	SHA     string    `json:"sha"`
 	Author  string    `json:"author"`
 	Message string    `json:"message"`
 	Date    time.Time `json:"date"`
@@ -17,7 +17,6 @@ type CommitStore struct {
 }
 
 func (C *CommitStore) InsertCommit() error {
-	fmt.Println("Storing Commit", C)
 	var err = database.DB.Create(C).Error
 
 	return err
@@ -65,9 +64,13 @@ func (C *CommitStore) GetCommitsByRepo(repo string) error {
 	return err
 }
 
-func (C *CommitStore) GetCommits() error {
+func (C *CommitStore) GetCommits() ([]CommitStore, error) {
 
-	var err = database.DB.Find(C).Error
+	var commits []CommitStore
+	err := database.DB.Find(&commits).Error
+	if err != nil {
+		return nil, err
+	}
 
-	return err
+	return commits, nil
 }

@@ -1,6 +1,7 @@
 package test
 
 import (
+	"encoding/json"
 	"errors"
 	"io"
 	"net/http"
@@ -11,7 +12,7 @@ import (
 )
 
 // Mock version of MakeRequest
-func mockMakeRequest(url string) ([]byte, error) {
+func mockMakeRequest[T any](url string) ([]T, error) {
 	// Check for a specific test URL to simulate different responses
 	if url == "https://api.github.com/repos/testowner/testrepo/commits" {
 		recorder := httptest.NewRecorder()
@@ -26,7 +27,14 @@ func mockMakeRequest(url string) ([]byte, error) {
 			return nil, err
 		}
 
-		return body, nil
+		var data []T
+
+		err = json.Unmarshal(body, &data)
+		if err != nil {
+			return nil, err
+		}
+
+		return data, nil
 	}
 
 	if url == "https://api.github.com/repos/testowner/testrepo" {
@@ -41,7 +49,14 @@ func mockMakeRequest(url string) ([]byte, error) {
 			return nil, err
 		}
 
-		return body, nil
+		var data []T
+
+		err = json.Unmarshal(body, &data)
+		if err != nil {
+			return nil, err
+		}
+
+		return data, nil
 	}
 
 	return nil, errors.New("error making request")
@@ -53,9 +68,9 @@ func TestFetchCommit(t *testing.T) {
 		t.Fatalf("expected no error, got %v", err)
 	}
 
-	expected := `[{"sha": "abc123"}]`
-	if string(body) != expected {
-		t.Fatalf("expected %s, got %s", expected, string(body))
+	expected := `abc123`
+	if body[0].Sha != expected {
+		t.Fatalf("expected %s, got %s", expected, body[0].Sha)
 	}
 }
 

@@ -1,7 +1,6 @@
 package test
 
 import (
-	"encoding/json"
 	"errors"
 	"savannahtech/src/core"
 	"savannahtech/src/types"
@@ -26,7 +25,7 @@ type Committer struct {
 
 func TestFetchAndProcessDataSuccess(t *testing.T) {
 	// Mock fetch function
-	mockFetchFunc := func(owner, repo string, makeRequest types.RequestFunc) ([]byte, error) {
+	mockFetchFunc := func(owner, repo string, makeRequest types.RequestFunc[Commit]) ([]Commit, error) {
 		mockData := []Commit{
 			{
 				Commit: CommitDetail{
@@ -36,7 +35,7 @@ func TestFetchAndProcessDataSuccess(t *testing.T) {
 				},
 			},
 		}
-		return json.Marshal(mockData)
+		return mockData, nil
 	}
 
 	// Mock process function
@@ -47,7 +46,7 @@ func TestFetchAndProcessDataSuccess(t *testing.T) {
 		return nil
 	}
 
-	err := core.FetchAndProcessData("testowner", "testrepo", mockFetchFunc, mockProcessFunc)
+	err := core.FetchAndProcessData[Commit]("testowner", "testrepo", mockFetchFunc, mockProcessFunc)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -55,7 +54,7 @@ func TestFetchAndProcessDataSuccess(t *testing.T) {
 
 func TestFetchAndProcessDataFetchError(t *testing.T) {
 	// Mock fetch function that returns an error
-	mockFetchFunc := func(owner, repo string, makeRequest types.RequestFunc) ([]byte, error) {
+	mockFetchFunc := func(owner, repo string, makeRequest types.RequestFunc[Commit]) ([]Commit, error) {
 		return nil, errors.New("fetch error")
 	}
 
@@ -76,7 +75,7 @@ func TestFetchAndProcessDataFetchError(t *testing.T) {
 
 func TestFetchAndProcessDataProcessError(t *testing.T) {
 	// Mock fetch function that returns valid data
-	mockFetchFunc := func(owner, repo string, makeRequest types.RequestFunc) ([]byte, error) {
+	mockFetchFunc := func(owner, repo string, makeRequest types.RequestFunc[Commit]) ([]Commit, error) {
 		mockData := []Commit{
 			{
 				Commit: CommitDetail{
@@ -86,7 +85,7 @@ func TestFetchAndProcessDataProcessError(t *testing.T) {
 				},
 			},
 		}
-		return json.Marshal(mockData)
+		return mockData, nil
 	}
 
 	// Mock process function that returns an error

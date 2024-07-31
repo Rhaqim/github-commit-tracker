@@ -1,7 +1,6 @@
 package model
 
 import (
-	"fmt"
 	"savannahtech/src/database"
 
 	"gorm.io/gorm"
@@ -21,8 +20,6 @@ type RepositoryStore struct {
 }
 
 func (R *RepositoryStore) InsertRepository() error {
-	fmt.Println("Storing Repository", R)
-
 	var err = database.DB.Create(R).Error
 
 	return err

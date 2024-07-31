@@ -9,17 +9,27 @@ import (
 	"savannahtech/src/utils"
 )
 
-func FetchRepo(owner, repo string, makeRequest types.RequestFunc) ([]byte, error) {
+func FetchRepo(owner, repo string, makeRequest types.RequestFunc[byte]) ([]byte, error) {
 	url := "https://api.github.com/repos/" + owner + "/" + repo
 	return utils.FetchData(url, makeRequest)
 }
 
-func processRepository(repo model.RepositoryStore) error {
-
-	return repo.InsertRepository()
+func processRepository(repo types.Repository) error {
+	repoStore := model.RepositoryStore{
+		Name:            repo.Name,
+		Description:     repo.Description,
+		URL:             repo.URL,
+		Language:        repo.Language,
+		StargazersCount: repo.StargazersCount,
+		WatchersCount:   repo.WatchersCount,
+		ForksCount:      repo.ForksCount,
+		RepoCreatedAt:   repo.CreatedAt,
+		RepoUpdatedAt:   repo.UpdatedAt,
+	}
+	return repoStore.InsertRepository()
 }
 
-func fetchAndProcessData[T any](owner, repo string, fetchFunc func(string, string, types.RequestFunc) ([]byte, error), processFunc func(T) error) error {
+func fetchAndProcessData[T any](owner, repo string, fetchFunc func(string, string, types.RequestFunc[byte]) ([]byte, error), processFunc func(T) error) error {
 
 	var data T
 
@@ -42,7 +52,7 @@ func fetchAndProcessData[T any](owner, repo string, fetchFunc func(string, strin
 }
 
 func RepositoryData(owner, repo string) error {
-	err := fetchAndProcessData[model.RepositoryStore](owner, repo, FetchRepo, processRepository)
+	err := fetchAndProcessData[types.Repository](owner, repo, FetchRepo, processRepository)
 	if err != nil {
 		return err
 	}

@@ -1,7 +1,7 @@
 package database
 
 import (
-	"fmt"
+	"log"
 	"savannahtech/src/config"
 
 	"gorm.io/driver/postgres"
@@ -16,7 +16,7 @@ var DB *gorm.DB // Global database connection
 func Init() {
 	var err error
 
-	fmt.Println("Connecting to PostgreSQL database...", config.PgHost, config.PgPort, config.PgUser, config.PgPassword, config.Database, config.SSLMode)
+	log.Println("Connecting to PostgreSQL database...")
 
 	var dsn string = "host=" + config.PgHost + " port=" + config.PgPort + " user=" + config.PgUser + " dbname=" + config.Database + " sslmode=" + config.SSLMode + " password=" + config.PgPassword
 
