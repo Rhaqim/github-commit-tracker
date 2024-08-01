@@ -25,20 +25,6 @@ func (R *RepositoryStore) InsertRepository() error {
 	return err
 }
 
-func (R *RepositoryStore) UpdateRepository() error {
-
-	var err = database.DB.Save(R).Error
-
-	return err
-}
-
-func (R *RepositoryStore) DeleteRepository() error {
-
-	var err = database.DB.Delete(R).Error
-
-	return err
-}
-
 func (R *RepositoryStore) GetRepositoryById(id uint) error {
 
 	var err = database.DB.First(R, id).Error
@@ -70,6 +56,20 @@ func (R *RepositoryStore) GetRepositoriesByRepo(repo string) error {
 func (R *RepositoryStore) GetRepositories() error {
 
 	var err = database.DB.Find(R).Error
+
+	return err
+}
+
+func (R *RepositoryStore) UpdateRepository() error {
+
+	var err = database.DB.Save(R).Error
+
+	return err
+}
+
+func (R *RepositoryStore) DeleteRepository() error {
+
+	var err = database.DB.Delete(R).Error
 
 	return err
 }

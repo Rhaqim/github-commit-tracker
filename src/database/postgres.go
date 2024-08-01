@@ -10,7 +10,7 @@ import (
 
 var DB *gorm.DB // Global database connection
 
-// InitDB initializes the database connection using the configuration values from the config package.
+// Init initializes the database connection using the configuration values from the config package.
 // It establishes a connection to the PostgreSQL database and assigns the connection to the global DB variable.
 // If an error occurs during the connection process, it logs the error and shuts down the logger.
 func Init() {

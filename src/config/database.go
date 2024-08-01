@@ -14,7 +14,6 @@ var (
 	PgUser     = ut.Env("DB_USER", "savannah")
 	PgPassword = ut.Env("DB_PASSWORD", "postgres")
 	SSLMode    = ut.Env("SSL_MODE", "disable")
-	// PgUrl      = ut.Env("PG_URL", "postgres://"+PgUser+":"+PgPassword+"@"+PgHost+":"+PgPort+"/"+Database+"?sslmode="+SSLMode)
 )
 
 // Redis
