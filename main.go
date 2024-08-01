@@ -13,9 +13,14 @@ import (
 )
 
 func main() {
+	// Initialise the logger
+	log.Init()
+
+	// Initialize the database
 	database.Init()
 	defer database.Close()
 
+	// Run database migrations
 	err := model.Migrations()
 	if err != nil {
 		log.ErrorLogger.Fatal("Failed to run database migrations:", err)
@@ -29,6 +34,7 @@ func main() {
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, os.Interrupt, syscall.SIGTERM)
 
+	// Start the Gin server
 	go func() {
 		r := router.NewRouter()
 		if err := r.Run(":8080"); err != nil {
@@ -54,5 +60,6 @@ func main() {
 	<-signalChan
 	log.InfoLogger.Println("Shutting down server and event listener...")
 	// Perform any cleanup here, like closing database connections or gracefully stopping event listeners
+	os.Exit(0)
 
 }

@@ -22,55 +22,72 @@ type RepositoryStore struct {
 
 func (R *RepositoryStore) InsertRepository() error {
 	var err = database.DB.Create(R).Error
+	if err != nil {
+		return fmt.Errorf("error inserting repository: %w", err)
+	}
 
-	return fmt.Errorf("error inserting repository: %w", err)
+	return nil
 }
 
 func (R *RepositoryStore) GetRepositoryById(id uint) error {
-
 	var err = database.DB.First(R, id).Error
+	if err != nil {
+		return fmt.Errorf("error retrieving repository by id: %w", err)
+	}
 
-	return fmt.Errorf("error retrieving repository by id: %w", err)
+	return nil
 }
 
 func (R *RepositoryStore) GetRepositoriesByOwnerAndRepo(owner, repo string) error {
-
 	var err = database.DB.Where("owner = ? AND repo = ?", owner, repo).Find(R).Error
+	if err != nil {
+		return fmt.Errorf("error retrieving repositories by owner and repo: %w", err)
+	}
 
-	return fmt.Errorf("error retrieving repositories by owner and repo: %w", err)
+	return nil
 }
 
 func (R *RepositoryStore) GetRepositoriesByOwner(owner string) error {
-
 	var err = database.DB.Where("owner = ?", owner).Find(R).Error
+	if err != nil {
+		return fmt.Errorf("error retrieving repositories by owner: %w", err)
+	}
 
-	return fmt.Errorf("error retrieving repositories by owner: %w", err)
+	return nil
 }
 
 func (R *RepositoryStore) GetRepositoriesByRepo(repo string) error {
-
 	var err = database.DB.Where("repo = ?", repo).Find(R).Error
+	if err != nil {
+		return fmt.Errorf("error retrieving repositories by repo: %w", err)
+	}
 
-	return fmt.Errorf("error retrieving repositories by repo: %w", err)
+	return nil
 }
 
 func (R *RepositoryStore) GetRepositories() error {
-
 	var err = database.DB.Find(R).Error
+	if err != nil {
+		return fmt.Errorf("error retrieving repositories: %w", err)
+	}
 
-	return fmt.Errorf("error retrieving repositories: %w", err)
+	return nil
 }
 
 func (R *RepositoryStore) UpdateRepository() error {
-
 	var err = database.DB.Save(R).Error
+	if err != nil {
+		return fmt.Errorf("error updating repository: %w", err)
+	}
 
-	return fmt.Errorf("error updating repository: %w", err)
+	return nil
 }
 
 func (R *RepositoryStore) DeleteRepository() error {
-
 	var err = database.DB.Delete(R).Error
+	if err != nil {
+		return fmt.Errorf("error deleting repository: %w", err)
+	}
 
-	return fmt.Errorf("error deleting repository: %w", err)
+	return nil
 }

@@ -19,21 +19,30 @@ type CommitStore struct {
 
 func (C *CommitStore) InsertCommit() error {
 	var err = database.DB.Create(C).Error
+	if err != nil {
+		return fmt.Errorf("error inserting commit: %w", err)
+	}
 
-	return fmt.Errorf("error inserting commit: %w", err)
+	return nil
 }
 
 func (C *CommitStore) InsertManyCommits(commits []CommitStore) error {
 	var err = database.DB.Create(commits).Error
+	if err != nil {
+		return fmt.Errorf("error inserting commits: %w", err)
+	}
 
-	return fmt.Errorf("error inserting commits: %w", err)
+	return nil
 }
 
 func (C *CommitStore) GetCommitById(id uint) error {
 
 	var err = database.DB.First(C, id).Error
+	if err != nil {
+		return fmt.Errorf("error retrieving commit by id: %w", err)
+	}
 
-	return fmt.Errorf("error retrieving commit by id: %w", err)
+	return nil
 }
 
 func (C *CommitStore) GetLastCommitSHA() string {
@@ -58,15 +67,21 @@ func (C *CommitStore) GetCommits() ([]CommitStore, error) {
 func (C *CommitStore) UpdateCommit() error {
 
 	var err = database.DB.Save(C).Error
+	if err != nil {
+		return fmt.Errorf("error updating commit: %w", err)
+	}
 
-	return fmt.Errorf("error updating commit: %w", err)
+	return nil
 }
 
 func (C *CommitStore) DeleteCommit() error {
 
 	var err = database.DB.Delete(C).Error
+	if err != nil {
+		return fmt.Errorf("error deleting commit: %w", err)
+	}
 
-	return fmt.Errorf("error deleting commit: %w", err)
+	return nil
 }
 
 type CommitCount struct {
