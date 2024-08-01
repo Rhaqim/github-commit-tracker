@@ -16,7 +16,7 @@ import (
 
 func ExponentialBackoff(n uint, maximun_backoff float64) time.Duration {
 	// Generate a random number of milliseconds up to 1000
-	random_number_milliseconds := rand.Float64() * 1000
+	random_number_milliseconds := rand.Float64() * 50000
 
 	// Calculate the wait time
 	var wait_time float64 = math.Min((math.Exp2(float64(n)) + random_number_milliseconds), maximun_backoff)
@@ -49,7 +49,7 @@ func FetchCommits(url string) ([]types.Commit, error) {
 	var resp *http.Response
 	var err error
 
-	maximum_backoff := 32000.0 // 32 seconds
+	maximum_backoff := 44000.0 // 44 seconds
 	maxRetries := 10
 
 	var allCommits []types.Commit
@@ -66,7 +66,9 @@ func FetchCommits(url string) ([]types.Commit, error) {
 					log.InfoLogger.Println("Status code:", resp.StatusCode)
 				}
 
-				time.Sleep(ExponentialBackoff(uint(i), maximum_backoff))
+				duration := ExponentialBackoff(uint(i), maximum_backoff)
+				log.InfoLogger.Println("Sleeping for", duration)
+				time.Sleep(duration)
 				continue
 			}
 

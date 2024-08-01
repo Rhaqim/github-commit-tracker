@@ -76,8 +76,8 @@ func ProcessCommitData(owner, repo string) error {
 	return nil
 }
 
-func GetEvent() error {
-	log.InfoLogger.Println("Starting event listener...")
+func GetCommitEvent() error {
+	log.InfoLogger.Println("Starting commit event listener...")
 
 	var errChan = make(chan error)
 

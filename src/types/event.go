@@ -3,6 +3,7 @@ package types
 type EventType string
 
 const (
+	NewRepo     EventType = "new-repo"
 	CommitEvent EventType = "commit"
 	RepoEvent   EventType = "repo"
 )

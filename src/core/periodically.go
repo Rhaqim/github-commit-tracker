@@ -12,7 +12,7 @@ import (
 )
 
 func PeriodFetch() error {
-	log.InfoLogger.Println("Starting periodic fetch...")
+	log.InfoLogger.Println("Starting periodic commit fetch...")
 
 	var errChan = make(chan error)
 	defer close(errChan)

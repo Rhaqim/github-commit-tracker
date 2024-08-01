@@ -34,6 +34,9 @@ func main() {
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, os.Interrupt, syscall.SIGTERM)
 
+	// Start the event listeners
+	EventListeners()
+
 	// Start the Gin server
 	go func() {
 		r := router.NewRouter()
@@ -42,9 +45,25 @@ func main() {
 		}
 	}()
 
+	// Wait for interrupt signal to gracefully shutdown the application
+	<-signalChan
+	log.InfoLogger.Println("Shutting down server and event listener...")
+	// Perform any cleanup here, like closing database connections or gracefully stopping event listeners
+	os.Exit(0)
+
+}
+
+func EventListeners() {
 	// Start the event listener for repo events
 	go func() {
-		if err := core.GetEvent(); err != nil {
+		if err := core.GetCommitEvent(); err != nil {
+			log.ErrorLogger.Fatalf("Error in event listener: %v", err)
+		}
+	}()
+
+	// Start the event listener for repo events
+	go func() {
+		if err := core.GetRepoEvent(); err != nil {
 			log.ErrorLogger.Fatalf("Error in event listener: %v", err)
 		}
 	}()
@@ -55,11 +74,4 @@ func main() {
 			log.ErrorLogger.Fatalf("Error in periodic fetch: %v", err)
 		}
 	}()
-
-	// Wait for interrupt signal to gracefully shutdown the application
-	<-signalChan
-	log.InfoLogger.Println("Shutting down server and event listener...")
-	// Perform any cleanup here, like closing database connections or gracefully stopping event listeners
-	os.Exit(0)
-
 }
