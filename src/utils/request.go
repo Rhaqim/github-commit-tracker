@@ -25,7 +25,7 @@ func ExponentialBackoff(n uint, maximun_backoff float64) time.Duration {
 }
 
 // Helper function to get the next page URL from the "Link" header
-func getNextPageURL(linkHeader string) string {
+func GetNextPageURL(linkHeader string) string {
 	if linkHeader == "" {
 		return ""
 	}
@@ -95,7 +95,7 @@ func FetchCommits(url string) ([]types.Commit, error) {
 		allCommits = append(allCommits, data...)
 
 		// Check if there's a next page
-		nextURL := getNextPageURL(resp.Header.Get("Link"))
+		nextURL := GetNextPageURL(resp.Header.Get("Link"))
 		if nextURL == "" {
 			break
 		}

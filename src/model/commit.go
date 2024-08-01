@@ -3,6 +3,7 @@ package model
 import (
 	"fmt"
 	"savannahtech/src/database"
+	"savannahtech/src/types"
 	"time"
 
 	"gorm.io/gorm"
@@ -85,13 +86,8 @@ func (C *CommitStore) DeleteCommit() error {
 	return nil
 }
 
-type CommitCount struct {
-	Author      string
-	CommitCount int
-}
-
-func (C *CommitStore) GetTopCommitAuthors(topN int) ([]CommitCount, error) {
-	var results []CommitCount
+func (C *CommitStore) GetTopCommitAuthors(topN int) ([]types.CommitCount, error) {
+	var results []types.CommitCount
 
 	// Perform the query
 	err := database.DB.Model(C).
