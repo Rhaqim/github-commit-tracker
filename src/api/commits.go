@@ -23,7 +23,7 @@ func GetCommits(c *gin.Context) {
 func GetTopCommitAuthors(c *gin.Context) {
 	var commit model.CommitStore
 
-	topN := c.Query("topN")
+	topN := c.Query("n")
 
 	topNInt, err := strconv.Atoi(topN)
 	if err != nil {
