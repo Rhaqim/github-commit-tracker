@@ -14,6 +14,7 @@ GitHub Commit Tracker is an application designed to fetch and store commit data 
   - [Usage](#usage)
     - [Fetching and Storing Commits](#fetching-and-storing-commits)
     - [Top Commit Author](#top-commit-author)
+    - [Commits by Repository](#commits-by-repository)
   - [Error Handling](#error-handling)
   - [Contributing](#contributing)
   - [License](#license)
@@ -108,6 +109,16 @@ curl -X GET "http://localhost:8080/commits/top-authors?n=10"
 ```
 
 This will retrieve the top 10 commit authors based on the commit counts.
+
+### Commits by Repository
+
+You can retrieve the commits by repository using the GetCommitsByRepository function.
+
+```curl
+curl -X GET "http://localhost:8080/commits/github-commit-tracker"
+```
+
+This will retrieve the commits for the `github-commit-tracker` repository.
 
 ## Error Handling
 
