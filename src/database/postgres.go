@@ -1,8 +1,8 @@
 package database
 
 import (
-	"log"
 	"savannahtech/src/config"
+	"savannahtech/src/log"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -10,28 +10,23 @@ import (
 
 var DB *gorm.DB // Global database connection
 
-// Init initializes the database connection using the configuration values from the config package.
-// It establishes a connection to the PostgreSQL database and assigns the connection to the global DB variable.
-// If an error occurs during the connection process, it logs the error and shuts down the logger.
 func Init() {
 	var err error
 
-	log.Println("Connecting to PostgreSQL database...")
+	log.InfoLogger.Println("Connecting to PostgreSQL database...")
 
 	var dsn string = "host=" + config.PgHost + " port=" + config.PgPort + " user=" + config.PgUser + " dbname=" + config.Database + " sslmode=" + config.SSLMode + " password=" + config.PgPassword
 
-	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
-		// Logger: logger.Default.LogMode(logger.Info),
-	})
+	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		panic("failed to connect database")
+		log.ErrorLogger.Fatal("Failed to connect database:", err)
 	}
 }
 
 func Close() {
 	sqlDB, err := DB.DB()
 	if err != nil {
-		panic("failed to close database")
+		log.ErrorLogger.Fatal("Failed to close database:", err)
 	}
 	sqlDB.Close()
 }

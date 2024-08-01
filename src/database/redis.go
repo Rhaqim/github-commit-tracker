@@ -1,8 +1,8 @@
 package database
 
 import (
-	"log"
 	"savannahtech/src/config"
+	"savannahtech/src/log"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -13,7 +13,8 @@ var Redis *redis.Client // Global Redis connection
 // It establishes a connection to the Redis database and assigns the connection to the global Redis variable.
 // If an error occurs during the connection process, it logs the error and shuts down the logger.
 func CacheInit() {
-	log.Println("Connecting to Redis database...")
+	log.InfoLogger.Println("Connecting to Redis database...")
+
 	Redis = redis.NewClient(&redis.Options{
 		Addr:     config.RedisAddress,
 		Password: config.RedisPassword,
@@ -22,5 +23,8 @@ func CacheInit() {
 }
 
 func CacheClose() {
-	Redis.Close()
+	err := Redis.Close()
+	if err != nil {
+		log.ErrorLogger.Fatal("Failed to close Redis connection:", err)
+	}
 }

@@ -1,12 +1,12 @@
 package model
 
 import (
-	"log"
 	"savannahtech/src/database"
+	"savannahtech/src/log"
 )
 
 func Migrations() error {
-	log.Println("Running database migrations...")
+	log.InfoLogger.Println("Running database migrations...")
 
 	err := database.DB.AutoMigrate(CommitStore{}, RepositoryStore{})
 	if err != nil {

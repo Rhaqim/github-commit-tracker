@@ -1,13 +1,13 @@
 package main
 
 import (
-	"log"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"savannahtech/src/core"
 	"savannahtech/src/database"
+	"savannahtech/src/log"
 	"savannahtech/src/model"
 	"savannahtech/src/router"
 )
@@ -18,7 +18,7 @@ func main() {
 
 	err := model.Migrations()
 	if err != nil {
-		log.Fatal(err)
+		log.ErrorLogger.Fatal("Failed to run database migrations:", err)
 	}
 
 	// Initialize the cache
@@ -32,27 +32,27 @@ func main() {
 	go func() {
 		r := router.NewRouter()
 		if err := r.Run(":8080"); err != nil {
-			log.Fatalf("Failed to run Gin server: %v", err)
+			log.ErrorLogger.Fatalf("Failed to run Gin server: %v", err)
 		}
 	}()
 
 	// Start the event listener for repo events
 	go func() {
 		if err := core.GetEvent(); err != nil {
-			log.Fatalf("Error in event listener: %v", err)
+			log.ErrorLogger.Fatalf("Error in event listener: %v", err)
 		}
 	}()
 
 	// start the periodic fetch
 	go func() {
 		if err := core.PeriodFetch(); err != nil {
-			log.Fatalf("Error in periodic fetch: %v", err)
+			log.ErrorLogger.Fatalf("Error in periodic fetch: %v", err)
 		}
 	}()
 
 	// Wait for interrupt signal to gracefully shutdown the application
 	<-signalChan
-	log.Println("Shutting down server and event listener...")
+	log.InfoLogger.Println("Shutting down server and event listener...")
 	// Perform any cleanup here, like closing database connections or gracefully stopping event listeners
 
 }

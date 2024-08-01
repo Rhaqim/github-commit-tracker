@@ -3,8 +3,8 @@ package event
 import (
 	"context"
 	"encoding/json"
-	"log"
 	"savannahtech/src/database"
+	"savannahtech/src/log"
 	"savannahtech/src/types"
 
 	"github.com/google/uuid"
@@ -41,7 +41,7 @@ func (q *EventQueue) Subscribe(handler func(event types.Event)) error {
 		var event types.Event
 		err := json.Unmarshal([]byte(msg.Payload), &event)
 		if err != nil {
-			log.Printf("Failed to unmarshal event: %v", err)
+			log.ErrorLogger.Printf("Failed to unmarshal event: %v", err)
 			continue
 		}
 
