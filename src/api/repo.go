@@ -9,9 +9,9 @@ import (
 func GetRepo(c *gin.Context) {
 	owner := c.Param("owner")
 	repo := c.Param("repo")
-	if err := core.RepositoryData(owner, repo); err != nil {
+	if err := core.ProcessRepositoryData(owner, repo); err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(200, gin.H{"status": "Repository data fetched"})
+	c.JSON(200, gin.H{"status": "Processed repository data"})
 }

@@ -36,10 +36,17 @@ func main() {
 		}
 	}()
 
-	// Start the event listener in a separate goroutine
+	// Start the event listener for repo events
 	go func() {
 		if err := core.GetEvent(); err != nil {
 			log.Fatalf("Error in event listener: %v", err)
+		}
+	}()
+
+	// start the periodic fetch
+	go func() {
+		if err := core.PeriodFetch(); err != nil {
+			log.Fatalf("Error in periodic fetch: %v", err)
 		}
 	}()
 
