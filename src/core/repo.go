@@ -2,9 +2,9 @@ package core
 
 import (
 	"fmt"
-	"log"
 	"savannahtech/src/config"
 	"savannahtech/src/event"
+	"savannahtech/src/log"
 	"savannahtech/src/model"
 	"savannahtech/src/types"
 	"savannahtech/src/utils"
@@ -13,7 +13,7 @@ import (
 )
 
 func ProcessRepositoryData(owner, repo string) error {
-	log.Println("Processing repository data")
+	log.InfoLogger.Println("Processing repository data")
 
 	var err error
 	var repo_ types.Repository

@@ -20,20 +20,20 @@ type CommitStore struct {
 func (C *CommitStore) InsertCommit() error {
 	var err = database.DB.Create(C).Error
 
-	return err
+	return fmt.Errorf("error inserting commit: %w", err)
 }
 
 func (C *CommitStore) InsertManyCommits(commits []CommitStore) error {
 	var err = database.DB.Create(commits).Error
 
-	return err
+	return fmt.Errorf("error inserting commits: %w", err)
 }
 
 func (C *CommitStore) GetCommitById(id uint) error {
 
 	var err = database.DB.First(C, id).Error
 
-	return err
+	return fmt.Errorf("error retrieving commit by id: %w", err)
 }
 
 func (C *CommitStore) GetLastCommitSHA() string {
@@ -49,7 +49,7 @@ func (C *CommitStore) GetCommits() ([]CommitStore, error) {
 	var commits []CommitStore
 	err := database.DB.Find(&commits).Error
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error retrieving commits: %w", err)
 	}
 
 	return commits, nil
@@ -59,14 +59,14 @@ func (C *CommitStore) UpdateCommit() error {
 
 	var err = database.DB.Save(C).Error
 
-	return err
+	return fmt.Errorf("error updating commit: %w", err)
 }
 
 func (C *CommitStore) DeleteCommit() error {
 
 	var err = database.DB.Delete(C).Error
 
-	return err
+	return fmt.Errorf("error deleting commit: %w", err)
 }
 
 type CommitCount struct {
@@ -91,21 +91,3 @@ func (C *CommitStore) GetTopCommitAuthors(topN int) ([]CommitCount, error) {
 
 	return results, nil
 }
-
-// func GetTopCommitAuthors(topN int) ([]CommitCount, error) {
-// 	var results []CommitCount
-
-// 	// Perform the query
-// 	err := database.DB.Model(&CommitStore{}).
-// 		Select("author, COUNT(*) as commit_count").
-// 		Group("author").
-// 		Order("commit_count DESC").
-// 		Limit(topN).
-// 		Scan(&results).Error
-
-// 	if err != nil {
-// 		return nil, fmt.Errorf("error retrieving top commit authors: %w", err)
-// 	}
-
-// 	return results, nil
-// }

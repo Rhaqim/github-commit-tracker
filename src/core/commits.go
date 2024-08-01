@@ -2,9 +2,9 @@ package core
 
 import (
 	"fmt"
-	"log"
 	"savannahtech/src/config"
 	"savannahtech/src/event"
+	"savannahtech/src/log"
 	"savannahtech/src/model"
 	"savannahtech/src/types"
 	"savannahtech/src/utils"
@@ -44,7 +44,7 @@ func StoreCommit(commits []types.Commit) error {
 }
 
 func ProcessCommitData(owner, repo string) error {
-	log.Println("Processing commit data")
+	log.InfoLogger.Println("Processing commit data")
 
 	var err error
 	var commits []types.Commit
@@ -63,7 +63,7 @@ func ProcessCommitData(owner, repo string) error {
 		return fmt.Errorf("failed to store commits: %w", err)
 	}
 
-	log.Println("Finished processing commits")
+	log.InfoLogger.Println("Finished processing commits")
 
 	commitQueue.Publish(types.Event{
 		ID:      uuid.New().String(),
@@ -77,14 +77,14 @@ func ProcessCommitData(owner, repo string) error {
 }
 
 func GetEvent() error {
-	log.Println("Starting event listener...")
+	log.InfoLogger.Println("Starting event listener...")
 
 	var errChan = make(chan error)
 
 	var repoEvent *event.EventQueue = event.NewEventQueue(config.RepoEvent)
 
 	repoEvent.Subscribe(func(event types.Event) {
-		log.Println("Repo event received: ", event)
+		log.InfoLogger.Println("Repo event received: ", event)
 
 		// process commit data
 		err := ProcessCommitData(event.Owner, event.Repo)
@@ -95,7 +95,7 @@ func GetEvent() error {
 
 	for err := range errChan {
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to process commits: %w", err)
 		}
 	}
 	return nil

@@ -2,9 +2,9 @@ package core
 
 import (
 	"fmt"
-	"log"
 	"savannahtech/src/config"
 	"savannahtech/src/event"
+	"savannahtech/src/log"
 	"savannahtech/src/model"
 	"savannahtech/src/types"
 	"savannahtech/src/utils"
@@ -12,7 +12,7 @@ import (
 )
 
 func PeriodFetch() error {
-	log.Println("Starting periodic fetch...")
+	log.InfoLogger.Println("Starting periodic fetch...")
 
 	var errChan = make(chan error)
 	defer close(errChan)
@@ -20,7 +20,7 @@ func PeriodFetch() error {
 	var commitEvent *event.EventQueue = event.NewEventQueue(config.CommitEvent)
 
 	commitEvent.Subscribe(func(event types.Event) {
-		log.Printf("Commit event received: %v", event)
+		log.InfoLogger.Printf("Commit event received: %v", event)
 
 		err := PeriodicFetch(event.Owner, event.Repo)
 		if err != nil {
@@ -64,7 +64,7 @@ func PeriodicFetch(owner, repo string) error {
 			// Fetch the commits from the constructed URL
 			commits, err := utils.FetchCommits(url)
 			if err != nil {
-				log.Printf("Error fetching commits: %v", err)
+				log.ErrorLogger.Printf("Error fetching commits: %v", err)
 				errChan <- err
 				continue
 			}
@@ -72,7 +72,7 @@ func PeriodicFetch(owner, repo string) error {
 			// Store the fetched commits in the database
 			err = StoreCommit(commits)
 			if err != nil {
-				log.Printf("Error storing commits: %v", err)
+				log.ErrorLogger.Printf("Error storing commits: %v", err)
 				errChan <- err
 				continue
 			}

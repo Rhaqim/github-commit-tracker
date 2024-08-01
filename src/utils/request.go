@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"math"
 	"math/rand/v2"
 	"net/http"
 	"strings"
 	"time"
 
+	"savannahtech/src/log"
 	"savannahtech/src/types"
 )
 
@@ -34,6 +34,7 @@ func getNextPageURL(linkHeader string) string {
 	links := strings.Split(linkHeader, ",")
 	for _, link := range links {
 		parts := strings.Split(strings.TrimSpace(link), ";")
+
 		if len(parts) == 2 && strings.TrimSpace(parts[1]) == `rel="next"` {
 			url := strings.Trim(parts[0], "<>")
 			return url
@@ -56,15 +57,19 @@ func FetchCommits(url string) ([]types.Commit, error) {
 	for {
 		for i := 0; i < maxRetries; i++ {
 			resp, err = http.Get(url)
+
 			if err != nil || resp.StatusCode != http.StatusOK {
+
 				if err != nil {
-					log.Println("Error:", err)
+					log.ErrorLogger.Println("Error:", err)
 				} else {
-					log.Println("Status code:", resp.StatusCode)
+					log.InfoLogger.Println("Status code:", resp.StatusCode)
 				}
+
 				time.Sleep(ExponentialBackoff(uint(i), maximum_backoff))
 				continue
 			}
+
 			break
 		}
 
@@ -104,7 +109,7 @@ func FetchCommits(url string) ([]types.Commit, error) {
 func FetchRepository(url string) (types.Repository, error) {
 	resp, err := http.Get(url)
 	if err != nil {
-		return types.Repository{}, err
+		return types.Repository{}, fmt.Errorf("error fetching repository: %w", err)
 	}
 	defer resp.Body.Close()
 
@@ -114,13 +119,13 @@ func FetchRepository(url string) (types.Repository, error) {
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return types.Repository{}, err
+		return types.Repository{}, fmt.Errorf("error reading response body: %w", err)
 	}
 
 	var repository types.Repository
 	err = json.Unmarshal(body, &repository)
 	if err != nil {
-		return types.Repository{}, err
+		return types.Repository{}, fmt.Errorf("error unmarshalling data: %w", err)
 	}
 
 	return repository, nil
