@@ -37,6 +37,11 @@ func main() {
 	// Start the event listeners
 	EventListeners()
 
+	// load the startup repo
+	if err := core.LoadStartupRepo(); err != nil {
+		log.ErrorLogger.Fatal("Failed to load startup repo:", err)
+	}
+
 	// Start the Gin server
 	go func() {
 		r := router.NewRouter()
@@ -56,14 +61,14 @@ func main() {
 func EventListeners() {
 	// Start the event listener for repo events
 	go func() {
-		if err := core.GetCommitEvent(); err != nil {
+		if err := core.GetRepoEvent(); err != nil {
 			log.ErrorLogger.Fatalf("Error in event listener: %v", err)
 		}
 	}()
 
 	// Start the event listener for repo events
 	go func() {
-		if err := core.GetRepoEvent(); err != nil {
+		if err := core.GetCommitEvent(); err != nil {
 			log.ErrorLogger.Fatalf("Error in event listener: %v", err)
 		}
 	}()

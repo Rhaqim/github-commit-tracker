@@ -10,11 +10,12 @@ import (
 
 type CommitStore struct {
 	gorm.Model
-	SHA     string    `json:"sha"`
-	Author  string    `json:"author"`
-	Message string    `json:"message"`
-	Date    time.Time `json:"date"`
-	URL     string    `json:"url"`
+	SHA             string    `json:"sha"`
+	Author          string    `json:"author"`
+	Message         string    `json:"message"`
+	Date            time.Time `json:"date"`
+	URL             string    `json:"url"`
+	OwnerRepository string    `json:"owner_repository,omitempty"`
 }
 
 func (C *CommitStore) InsertCommit() error {

@@ -13,7 +13,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func StoreCommit(commits []types.Commit) error {
+func StoreCommit(commits []types.Commit, ownerRepo string) error {
 	var wg sync.WaitGroup
 	var commitStore model.CommitStore
 
@@ -24,11 +24,12 @@ func StoreCommit(commits []types.Commit) error {
 		go func(commit types.Commit, i int) {
 			defer wg.Done()
 			commitStores[i] = model.CommitStore{
-				SHA:     commit.Sha,
-				Author:  commit.Commit.Committer.Name,
-				Message: commit.Commit.Message,
-				Date:    commit.Commit.Committer.Date,
-				URL:     commit.Commit.Url,
+				SHA:             commit.Sha,
+				Author:          commit.Commit.Committer.Name,
+				Message:         commit.Commit.Message,
+				Date:            commit.Commit.Committer.Date,
+				URL:             commit.Commit.Url,
+				OwnerRepository: ownerRepo,
 			}
 		}(commit, i)
 	}
@@ -58,7 +59,7 @@ func ProcessCommitData(owner, repo string) error {
 		return fmt.Errorf("failed to fetch commits: %w", err)
 	}
 
-	err = StoreCommit(commits)
+	err = StoreCommit(commits, owner+"/"+repo)
 	if err != nil {
 		return fmt.Errorf("failed to store commits: %w", err)
 	}

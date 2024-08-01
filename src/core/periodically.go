@@ -70,7 +70,7 @@ func PeriodicFetch(owner, repo string) error {
 			}
 
 			// Store the fetched commits in the database
-			err = StoreCommit(commits)
+			err = StoreCommit(commits, owner+"/"+repo)
 			if err != nil {
 				log.ErrorLogger.Printf("Error storing commits: %v", err)
 				errChan <- err

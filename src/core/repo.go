@@ -37,6 +37,7 @@ func ProcessRepositoryData(owner, repo string) error {
 		ForksCount:      repo_.ForksCount,
 		RepoCreatedAt:   repo_.CreatedAt,
 		RepoUpdatedAt:   repo_.UpdatedAt,
+		OwnerRepository: owner + "/" + repo,
 	}
 
 	err = repoStore.InsertRepository()
@@ -77,5 +78,20 @@ func GetRepoEvent() error {
 			return fmt.Errorf("failed to process commits: %w", err)
 		}
 	}
+	return nil
+}
+
+func LoadStartupRepo() error {
+	var newRepoEvent *event.EventQueue = event.NewEventQueue(config.NewRepo)
+	if err := newRepoEvent.Publish(types.Event{
+		ID:      uuid.New().String(),
+		Message: "New repository event",
+		Type:    types.NewRepo,
+		Owner:   config.DefaultOwner,
+		Repo:    config.DefaultRepo,
+	}); err != nil {
+		return fmt.Errorf("failed to publish startup repository event: %w", err)
+	}
+
 	return nil
 }
