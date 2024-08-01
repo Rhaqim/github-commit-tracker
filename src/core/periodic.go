@@ -3,40 +3,11 @@ package core
 import (
 	"fmt"
 	"savannahtech/src/config"
-	"savannahtech/src/event"
 	"savannahtech/src/log"
 	"savannahtech/src/model"
-	"savannahtech/src/types"
 	"savannahtech/src/utils"
 	"time"
 )
-
-func PeriodFetch() error {
-	log.InfoLogger.Println("Starting periodic commit fetch...")
-
-	var errChan = make(chan error)
-	defer close(errChan)
-
-	var commitEvent *event.EventQueue = event.NewEventQueue(config.CommitEvent)
-
-	commitEvent.Subscribe(func(event types.Event) {
-		log.InfoLogger.Printf("Commit event received: %v", event)
-
-		err := PeriodicFetch(event.Owner, event.Repo)
-		if err != nil {
-			errChan <- err
-		}
-	})
-
-	// Handle errors from the error channel
-	for err := range errChan {
-		if err != nil {
-			return fmt.Errorf("failed to process commits: %w", err)
-		}
-	}
-
-	return nil
-}
 
 func PeriodicFetch(owner, repo string) error {
 	errChan := make(chan error)
@@ -56,10 +27,10 @@ func PeriodicFetch(owner, repo string) error {
 	go func() {
 		for range ticker.C {
 			// Get the last commit SHA stored
-			lastCommitSHA := commitStore.GetLastCommitSHA()
+			lastCommitDate := commitStore.GetLastCommitDate()
 
 			// Construct the URL with the last commit SHA to fetch new commits
-			url := baseURL + "?since=" + lastCommitSHA
+			url := baseURL + "?since=" + lastCommitDate.String()
 
 			// Fetch the commits from the constructed URL
 			commits, err := utils.FetchCommits(url)

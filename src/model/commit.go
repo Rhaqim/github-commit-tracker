@@ -47,12 +47,12 @@ func (C *CommitStore) GetCommitById(id uint) error {
 	return nil
 }
 
-func (C *CommitStore) GetLastCommitSHA() string {
+func (C *CommitStore) GetLastCommitDate() time.Time {
 	err := database.DB.Order("date desc").First(C).Error
 	if err != nil {
-		return ""
+		return time.Time{}
 	}
-	return C.SHA
+	return C.Date
 }
 
 func (C *CommitStore) GetCommits() ([]CommitStore, error) {
@@ -102,4 +102,19 @@ func (C *CommitStore) GetTopCommitAuthors(topN int) ([]types.CommitCount, error)
 	}
 
 	return results, nil
+}
+
+func (C *CommitStore) GetCommitsByAuthor(repoName string) ([]CommitStore, error) {
+	var commits []CommitStore
+
+	// Perform a join between the RepositoryStore and CommitStore tables
+	err := database.DB.Joins("JOIN repository_stores ON repository_stores.owner_repository = commit_stores.owner_repository").
+		Where("repository_stores.name = ?", repoName).
+		Find(&commits).Error
+
+	if err != nil {
+		return nil, fmt.Errorf("error retrieving commits for repository %s: %w", repoName, err)
+	}
+
+	return commits, nil
 }

@@ -20,6 +20,7 @@ func NewRouter() *gin.Engine {
 	{
 		commitGroup.GET("/get", api.GetCommits)
 		commitGroup.GET("/top-authors", api.GetTopCommitAuthors)
+		commitGroup.GET("/:repoName", api.GetCommitsByAuthor)
 	}
 
 	return r

@@ -39,3 +39,17 @@ func GetTopCommitAuthors(c *gin.Context) {
 
 	c.JSON(200, gin.H{"commitCounts": commitCounts, "message": "top commit authors retrieved successfully"})
 }
+
+func GetCommitsByAuthor(c *gin.Context) {
+	var commit model.CommitStore
+
+	repoName := c.Param("repoName")
+
+	commits, err := commit.GetCommitsByAuthor(repoName)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error(), "message": "failed to retrieve commits for repository"})
+		return
+	}
+
+	c.JSON(200, gin.H{"commits": commits, "message": "commits retrieved successfully"})
+}

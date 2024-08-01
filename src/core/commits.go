@@ -76,28 +76,3 @@ func ProcessCommitData(owner, repo string) error {
 
 	return nil
 }
-
-func GetCommitEvent() error {
-	log.InfoLogger.Println("Starting commit event listener...")
-
-	var errChan = make(chan error)
-
-	var repoEvent *event.EventQueue = event.NewEventQueue(config.RepoEvent)
-
-	repoEvent.Subscribe(func(event types.Event) {
-		log.InfoLogger.Println("Repo event received: ", event)
-
-		// process commit data
-		err := ProcessCommitData(event.Owner, event.Repo)
-		if err != nil {
-			errChan <- err
-		}
-	})
-
-	for err := range errChan {
-		if err != nil {
-			return fmt.Errorf("failed to process commits: %w", err)
-		}
-	}
-	return nil
-}
