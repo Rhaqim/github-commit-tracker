@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"savannahtech/src/database"
 	"time"
 
@@ -67,3 +68,44 @@ func (C *CommitStore) DeleteCommit() error {
 
 	return err
 }
+
+type CommitCount struct {
+	Author      string
+	CommitCount int
+}
+
+func (C *CommitStore) GetTopCommitAuthors(topN int) ([]CommitCount, error) {
+	var results []CommitCount
+
+	// Perform the query
+	err := database.DB.Model(C).
+		Select("author, COUNT(*) as commit_count").
+		Group("author").
+		Order("commit_count DESC").
+		Limit(topN).
+		Scan(&results).Error
+
+	if err != nil {
+		return nil, fmt.Errorf("error retrieving top commit authors: %w", err)
+	}
+
+	return results, nil
+}
+
+// func GetTopCommitAuthors(topN int) ([]CommitCount, error) {
+// 	var results []CommitCount
+
+// 	// Perform the query
+// 	err := database.DB.Model(&CommitStore{}).
+// 		Select("author, COUNT(*) as commit_count").
+// 		Group("author").
+// 		Order("commit_count DESC").
+// 		Limit(topN).
+// 		Scan(&results).Error
+
+// 	if err != nil {
+// 		return nil, fmt.Errorf("error retrieving top commit authors: %w", err)
+// 	}
+
+// 	return results, nil
+// }
