@@ -16,7 +16,7 @@ services:
     container_name: postgres
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: pass
+      POSTGRES_PASSWORD: password
       POSTGRES_DB: postgres
     ports:
       - 5432:5432
@@ -24,14 +24,3 @@ services:
       - ./postgres-data:/var/lib/postgresql/data
     expose:
       - 5432
-
-  # savannah:
-  #   build: .
-  #   container_name: savannah
-  #   ports:
-  #     - 8080:8080
-  #   depends_on:
-  #     - redis
-  #     - postgres
-  #   networks:
-  #     - savannah

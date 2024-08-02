@@ -8,6 +8,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+/*
+ProcessRepo processes the repository data for a repository.
+*/
 func ProcessRepo(c *gin.Context) {
 	owner := strings.ToLower(c.Param("owner"))
 	repo := strings.ToLower(c.Param("repo"))
@@ -20,6 +23,11 @@ func ProcessRepo(c *gin.Context) {
 	c.JSON(200, gin.H{"status": "Processed repository data"})
 }
 
+/*
+GetRepo returns the repository data for a repository.
+
+It retrieves the repository data from the database and returns it as a JSON response.
+*/
 func GetRepo(c *gin.Context) {
 	var repoStore model.RepositoryStore
 

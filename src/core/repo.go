@@ -15,6 +15,13 @@ import (
 	"gorm.io/gorm"
 )
 
+/*
+ProcessRepositoryData processes the repository data for a repository.
+
+It fetches the repository data from the GitHub API and stores it in the database.
+
+It also publishes an event to the event queue indicating that the repository data has been fetched.
+*/
 func ProcessRepositoryData(owner, repo, _ string) error {
 	log.InfoLogger.Println("Processing repository data")
 

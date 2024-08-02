@@ -14,6 +14,9 @@ import (
 	"github.com/google/uuid"
 )
 
+/*
+StoreCommit stores the commit data in the database.
+*/
 func StoreCommit(commits []types.Commit, ownerRepo string) error {
 	var wg sync.WaitGroup
 	var commitStore model.CommitStore
@@ -58,6 +61,13 @@ func StoreCommit(commits []types.Commit, ownerRepo string) error {
 	return nil
 }
 
+/*
+ProcessCommitData processes the commit data for a repository.
+
+It fetches the commit data from the GitHub API and stores it in the database.
+
+It also publishes an event to the event queue indicating that the commit data has been fetched.
+*/
 func ProcessCommitData(owner, repo, fromDate string) error {
 	log.InfoLogger.Println("Processing commit data")
 

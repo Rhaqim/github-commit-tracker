@@ -11,6 +11,13 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
+/*
+PeriodicFetch periodically fetches commit data for a repository.
+
+It uses a cron job to fetch commit data at a specified interval.
+
+It fetches the commit data from the GitHub API and stores it in the database.
+*/
 func PeriodicFetch(owner, repo, fromDate string) error {
 	c := cron.New()
 	var commitStore model.CommitStore

@@ -3,10 +3,16 @@ package api
 import (
 	"savannahtech/src/model"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
+/*
+GetCommits returns a list of commits for a repository.
+
+It retrieves the commits from the database and returns them as a JSON response.
+*/
 func GetCommits(c *gin.Context) {
 	var commit model.CommitStore
 
@@ -20,6 +26,11 @@ func GetCommits(c *gin.Context) {
 
 }
 
+/*
+GetTopCommitAuthors returns the top N commit authors in the database.
+
+It retrieves the top N commit authors from the database and returns them as a JSON response.
+*/
 func GetTopCommitAuthors(c *gin.Context) {
 	var commit model.CommitStore
 
@@ -40,10 +51,15 @@ func GetTopCommitAuthors(c *gin.Context) {
 	c.JSON(200, gin.H{"commitCounts": commitCounts, "message": "top commit authors retrieved successfully"})
 }
 
+/*
+GetCommitsByAuthor returns a list of commits for a repository by repository name.
+
+It retrieves the commits for a repository from the database and returns them as a JSON response.
+*/
 func GetCommitsByAuthor(c *gin.Context) {
 	var commit model.CommitStore
 
-	repoName := c.Param("repoName")
+	repoName := strings.ToLower(c.Param("repoName"))
 
 	commits, err := commit.GetCommitsByAuthor(repoName)
 	if err != nil {
