@@ -68,6 +68,8 @@ To quickly test the application if you don't have PostgreSQL and Redis running l
 docker-compose up -d
 ```
 
+> Note: Make sure the postgres and redis configurations are correct in the docker-compose.yml file.
+
 ## Configuration
 
 GitHub Commit Tracker requires the following environment variables to be set:
@@ -83,8 +85,8 @@ GitHub Commit Tracker requires the following environment variables to be set:
 - `DEFAULT_REPO`: The default repository to track on application startup.
 - `DEFAULT_START_DATE`: The default start date for fetching commit data. Should be in the format YYYY-MM-DD:HH:MM:SS e.g 2023-01-01:00:00:00
 - `REFETCH_INTERVAL`: The interval at which the application should get new commit data. Example: 1h, 2d, 30m, etc.
-
-> Note: You can copy the .env.example file to .env and modify the values accordingly.
+  
+> You can copy the `.env.example` file to `.env` and modify the values accordingly.
 
 ## Usage
 
