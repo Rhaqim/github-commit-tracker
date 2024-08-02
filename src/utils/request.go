@@ -68,10 +68,8 @@ func fetchWithBackoff(url string, maxRetries int, maximumBackoff float64) (*http
 	var err error
 
 	for i := 0; i < maxRetries; i++ {
-		fmt.Println("here...")
 
 		resp, err = http.Get(url)
-		fmt.Println("here..")
 
 		if err != nil || resp.StatusCode != http.StatusOK {
 			log.ErrorLogger.Println("Error:", err)

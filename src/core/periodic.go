@@ -11,7 +11,7 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
-func PeriodicFetch(owner, repo string) error {
+func PeriodicFetch(owner, repo, fromDate string) error {
 	c := cron.New()
 	var commitStore model.CommitStore
 
@@ -20,7 +20,7 @@ func PeriodicFetch(owner, repo string) error {
 	// Construct the base URL for fetching commits
 	baseURL := config.GithubRepoURL + ownerRepo + "/commits"
 
-	c.AddFunc("@every 10s", func() {
+	c.AddFunc("@every "+config.RefetchInterval, func() {
 		// Get the last commit SHA stored
 		lastCommitDate := commitStore.GetLastCommitDate(ownerRepo)
 

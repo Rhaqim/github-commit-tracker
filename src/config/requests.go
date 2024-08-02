@@ -12,6 +12,8 @@ var (
 
 // Default
 var (
-	DefaultOwner = ut.Env("DEFAULT_OWNER", "chromium")
-	DefaultRepo  = ut.Env("DEFAULT_REPO", "chromium")
+	DefaultOwner     = ut.Env("DEFAULT_OWNER", "chromium")
+	DefaultRepo      = ut.Env("DEFAULT_REPO", "chromium")
+	DefaultStartDate = ut.Env("DEFAULT_START_DATE", "2023-01-01:00:00:00")
+	RefetchInterval  = ut.Env("REFETCH_INTERVAL", "1h")
 )

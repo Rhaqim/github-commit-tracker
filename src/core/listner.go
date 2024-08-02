@@ -18,7 +18,7 @@ It then starts a goroutine to handle events from the event queue. It logs any er
 
 Finally, it returns nil if no errors occurred during the startup of the event listener.
 */
-func startEventListener(eventKey string, processFunc func(owner, repo string) error, listenerName string) error {
+func startEventListener(eventKey string, processFunc func(owner, repo, fromDate string) error, listenerName string) error {
 	log.InfoLogger.Printf("Starting %s listener...", listenerName)
 
 	errChan := make(chan error, 1)
@@ -40,7 +40,7 @@ func startEventListener(eventKey string, processFunc func(owner, repo string) er
 		log.InfoLogger.Printf("%s event received: %v", listenerName, event)
 
 		go func() {
-			if err := processFunc(event.Owner, event.Repo); err != nil {
+			if err := processFunc(event.Owner, event.Repo, event.From); err != nil {
 				errChan <- err
 			}
 		}()
@@ -50,13 +50,13 @@ func startEventListener(eventKey string, processFunc func(owner, repo string) er
 }
 
 func GetRepoEvent() error {
-	return startEventListener(config.NewRepo, ProcessRepositoryData, "repo event")
+	return startEventListener(config.RepoEvent, ProcessRepositoryData, "repo event")
 }
 
 func GetCommitEvent() error {
-	return startEventListener(config.RepoEvent, ProcessCommitData, "commit event")
+	return startEventListener(config.CommitEvent, ProcessCommitData, "commit event")
 }
 
 func PeriodFetch() error {
-	return startEventListener(config.CommitEvent, PeriodicFetch, "periodic commit fetch")
+	return startEventListener(config.PeriodEvent, PeriodicFetch, "periodic commit fetch")
 }

@@ -58,12 +58,18 @@ func StoreCommit(commits []types.Commit, ownerRepo string) error {
 	return nil
 }
 
-func ProcessCommitData(owner, repo string) error {
+func ProcessCommitData(owner, repo, fromDate string) error {
 	log.InfoLogger.Println("Processing commit data")
 
-	commitQueue := event.NewEventQueue(config.CommitEvent)
+	commitQueue := event.NewEventQueue(config.PeriodEvent)
 
-	url := config.GithubRepoURL + owner + "/" + repo + "/commits"
+	ownerRepo := owner + "/" + repo
+
+	url := config.GithubRepoURL + ownerRepo + "/commits"
+
+	if fromDate != "" {
+		url += "?since=" + fromDate
+	}
 
 	commitsChan := make(chan []types.Commit)
 
@@ -77,9 +83,9 @@ func ProcessCommitData(owner, repo string) error {
 	}()
 
 	for commit := range commitsChan {
-		log.InfoLogger.Println("Received commits: " + strconv.Itoa(len(commit)) + " for " + owner + "/" + repo)
+		log.InfoLogger.Println("Received commits: " + strconv.Itoa(len(commit)) + " for " + ownerRepo)
 
-		if err := StoreCommit(commit, owner+"/"+repo); err != nil {
+		if err := StoreCommit(commit, ownerRepo); err != nil {
 			return fmt.Errorf("failed to store commits: %w", err)
 		}
 	}

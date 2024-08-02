@@ -11,8 +11,9 @@ import (
 func ProcessRepo(c *gin.Context) {
 	owner := strings.ToLower(c.Param("owner"))
 	repo := strings.ToLower(c.Param("repo"))
+	fromDate := c.Query("fromDate")
 
-	if err := core.ProcessRepositoryData(owner, repo); err != nil {
+	if err := core.ProcessRepositoryData(owner, repo, fromDate); err != nil {
 		c.JSON(400, gin.H{"developer_error": err.Error(), "message": "failed to process repository data"})
 		return
 	}

@@ -15,13 +15,16 @@ import (
 	"gorm.io/gorm"
 )
 
-func ProcessRepositoryData(owner, repo string) error {
+func ProcessRepositoryData(owner, repo, _ string) error {
 	log.InfoLogger.Println("Processing repository data")
 
 	repoStore := model.RepositoryStore{}
-	repoQueue := event.NewEventQueue(config.RepoEvent)
-	commitQueue := event.NewEventQueue(config.CommitEvent)
+
+	repoQueue := event.NewEventQueue(config.CommitEvent)
+	commitQueue := event.NewEventQueue(config.PeriodEvent)
+
 	ownerRepo := owner + "/" + repo
+
 	url := config.GithubRepoURL + ownerRepo
 
 	// Check if the repository exists in the store
@@ -118,8 +121,10 @@ func handleExistingRepository(owner, repo string, repoStore *model.RepositorySto
 func LoadStartupRepo() error {
 	// wait for 2 seconds to allow the event listeners to start
 	<-time.After(2 * time.Second)
+
 	log.InfoLogger.Println("Loading startup repository")
-	var newRepoEvent *event.EventQueue = event.NewEventQueue(config.NewRepo)
+
+	var newRepoEvent *event.EventQueue = event.NewEventQueue(config.RepoEvent)
 	if err := newRepoEvent.Publish(types.Event{
 		ID:      uuid.New().String(),
 		Message: "New repository event",

@@ -71,9 +71,10 @@ GitHub Commit Tracker requires the following environment variables to be set:
 - `DB_PORT`: The port number of the PostgreSQL server.
 - `REDIS_HOST`: The hostname or IP address of the Redis server.
 - `REDIS_PORT`: The port number of the Redis server.
-- `DEFAULT_REPO`: The default repository to track on application startup.
 - `DEFAULT_OWNER`: The default owner of the default repository.
-- `DEFAULT_PERIOD`: The default period to fetch commit data on application startup.
+- `DEFAULT_REPO`: The default repository to track on application startup.
+- `DEFAULT_START_DATE`: The default start date for fetching commit data. Should be in the format YYYY-MM-DD:HH:MM:SS e.g 2023-01-01:00:00:00
+- `REFETCH_INTERVAL`: The interval at which the application should get new commit data. Example: 1h, 2d, 30m, etc.
 
 ## Usage
 
