@@ -1,12 +1,13 @@
 package core
 
 import (
-	"savannahtech/src/config"
-	"savannahtech/src/log"
-	"savannahtech/src/model"
-	"savannahtech/src/types"
-	"savannahtech/src/utils"
 	"strconv"
+
+	"savannahtech/internal/config"
+	"savannahtech/internal/log"
+	"savannahtech/internal/model"
+	"savannahtech/internal/types"
+	"savannahtech/internal/utils"
 
 	"github.com/robfig/cron/v3"
 )

@@ -1,8 +1,8 @@
 package model
 
 import (
-	"savannahtech/src/database"
-	"savannahtech/src/log"
+	"savannahtech/internal/database"
+	"savannahtech/internal/log"
 )
 
 func Migrations() error {

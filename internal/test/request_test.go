@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"savannahtech/src/types"
-	"savannahtech/src/utils"
 	"testing"
 	"time"
+
+	"savannahtech/internal/types"
+	"savannahtech/internal/utils"
 )
 
 func TestExponentialBackoff(t *testing.T) {

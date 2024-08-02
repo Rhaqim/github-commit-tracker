@@ -1,9 +1,10 @@
 package api
 
 import (
-	"savannahtech/src/core"
-	"savannahtech/src/model"
 	"strings"
+
+	"savannahtech/internal/core"
+	"savannahtech/internal/model"
 
 	"github.com/gin-gonic/gin"
 )

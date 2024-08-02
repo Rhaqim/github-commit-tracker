@@ -22,6 +22,7 @@ GitHub Commit Tracker is an application designed to fetch and store commit data 
 ## Features
 
 - **Fetching**: The application fetches new commit data from GitHub repositories.
+- **Repo Meta Data**: The application fetches and stores repository metadata such as the repository name, owner, and description.
 - **Periodic Fetching**: The application periodically fetches new commit data from GitHub repositories.
 - **Paginated Responses**: The application handles paginated responses from the GitHub API.
 - **Retry Mechanism**: The application implements a retry mechanism to handle rate limiting using exponential backoff.

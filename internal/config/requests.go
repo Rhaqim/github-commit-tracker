@@ -1,7 +1,7 @@
 package config
 
 import (
-	ut "savannahtech/src/utils"
+	ut "savannahtech/internal/utils"
 )
 
 // Github

@@ -3,7 +3,7 @@ package config
 import (
 	"strconv"
 
-	ut "savannahtech/src/utils"
+	ut "savannahtech/internal/utils"
 )
 
 // Postgres

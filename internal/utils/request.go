@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"savannahtech/src/log"
-	"savannahtech/src/types"
+	"savannahtech/internal/log"
+	"savannahtech/internal/types"
 )
 
 /*

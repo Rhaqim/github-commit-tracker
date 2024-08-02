@@ -2,9 +2,10 @@ package model
 
 import (
 	"fmt"
-	"savannahtech/src/database"
-	"savannahtech/src/types"
 	"time"
+
+	"savannahtech/internal/database"
+	"savannahtech/internal/types"
 
 	"gorm.io/gorm"
 )

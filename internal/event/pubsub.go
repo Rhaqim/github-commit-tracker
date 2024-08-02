@@ -3,9 +3,10 @@ package event
 import (
 	"context"
 	"encoding/json"
-	"savannahtech/src/database"
-	"savannahtech/src/log"
-	"savannahtech/src/types"
+
+	"savannahtech/internal/database"
+	"savannahtech/internal/log"
+	"savannahtech/internal/types"
 
 	"github.com/google/uuid"
 )

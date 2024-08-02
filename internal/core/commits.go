@@ -2,14 +2,15 @@ package core
 
 import (
 	"fmt"
-	"savannahtech/src/config"
-	"savannahtech/src/event"
-	"savannahtech/src/log"
-	"savannahtech/src/model"
-	"savannahtech/src/types"
-	"savannahtech/src/utils"
 	"strconv"
 	"sync"
+
+	"savannahtech/internal/config"
+	"savannahtech/internal/event"
+	"savannahtech/internal/log"
+	"savannahtech/internal/model"
+	"savannahtech/internal/types"
+	"savannahtech/internal/utils"
 
 	"github.com/google/uuid"
 )

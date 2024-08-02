@@ -5,11 +5,11 @@ import (
 	"os/signal"
 	"syscall"
 
-	"savannahtech/src/core"
-	"savannahtech/src/database"
-	"savannahtech/src/log"
-	"savannahtech/src/model"
-	"savannahtech/src/router"
+	"savannahtech/internal/core"
+	"savannahtech/internal/database"
+	"savannahtech/internal/log"
+	"savannahtech/internal/model"
+	"savannahtech/internal/router"
 )
 
 func main() {

@@ -1,10 +1,10 @@
 package core
 
 import (
-	"savannahtech/src/config"
-	"savannahtech/src/event"
-	"savannahtech/src/log"
-	"savannahtech/src/types"
+	"savannahtech/internal/config"
+	"savannahtech/internal/event"
+	"savannahtech/internal/log"
+	"savannahtech/internal/types"
 )
 
 /*

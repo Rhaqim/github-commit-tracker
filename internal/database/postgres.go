@@ -1,8 +1,8 @@
 package database
 
 import (
-	"savannahtech/src/config"
-	"savannahtech/src/log"
+	"savannahtech/internal/config"
+	"savannahtech/internal/log"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

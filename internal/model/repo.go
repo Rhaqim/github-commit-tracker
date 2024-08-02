@@ -2,7 +2,8 @@ package model
 
 import (
 	"fmt"
-	"savannahtech/src/database"
+
+	"savannahtech/internal/database"
 
 	"gorm.io/gorm"
 )

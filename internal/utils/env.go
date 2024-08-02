@@ -2,7 +2,8 @@ package utils
 
 import (
 	"os"
-	"savannahtech/src/log"
+
+	"savannahtech/internal/log"
 
 	"github.com/joho/godotenv"
 )
