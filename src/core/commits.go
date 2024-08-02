@@ -84,7 +84,8 @@ func ProcessCommitData(owner, repo string) error {
 		}
 	}
 
-	log.InfoLogger.Println("Finished processing commits")
+	log.InfoLogger.Println("Finished indexing initial commits")
+
 	commitQueue.Publish(types.Event{
 		ID:      uuid.New().String(),
 		Message: "Commit data fetched",

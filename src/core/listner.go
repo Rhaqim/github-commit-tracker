@@ -39,9 +39,11 @@ func startEventListener(eventKey string, processFunc func(owner, repo string) er
 	eventQueue.Subscribe(func(event types.Event) {
 		log.InfoLogger.Printf("%s event received: %v", listenerName, event)
 
-		if err := processFunc(event.Owner, event.Repo); err != nil {
-			errChan <- err
-		}
+		go func() {
+			if err := processFunc(event.Owner, event.Repo); err != nil {
+				errChan <- err
+			}
+		}()
 	})
 
 	return nil

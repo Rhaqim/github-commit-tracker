@@ -9,6 +9,7 @@ import (
 	"savannahtech/src/types"
 	"savannahtech/src/utils"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -115,6 +116,8 @@ func handleExistingRepository(owner, repo string, repoStore *model.RepositorySto
 }
 
 func LoadStartupRepo() error {
+	// wait for 2 seconds to allow the event listeners to start
+	<-time.After(2 * time.Second)
 	log.InfoLogger.Println("Loading startup repository")
 	var newRepoEvent *event.EventQueue = event.NewEventQueue(config.NewRepo)
 	if err := newRepoEvent.Publish(types.Event{

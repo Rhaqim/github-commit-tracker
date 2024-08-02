@@ -62,12 +62,20 @@ func GetNextPageURL(linkHeader string) string {
 
 // Helper function to make an HTTP request with exponential backoff
 func fetchWithBackoff(url string, maxRetries int, maximumBackoff float64) (*http.Response, error) {
+	log.InfoLogger.Println("Fetching data from", url)
+
 	var resp *http.Response
 	var err error
 
 	for i := 0; i < maxRetries; i++ {
+		fmt.Println("here...")
+
 		resp, err = http.Get(url)
+		fmt.Println("here..")
+
 		if err != nil || resp.StatusCode != http.StatusOK {
+			log.ErrorLogger.Println("Error:", err)
+
 			if err != nil {
 				log.InfoLogger.Println("Error:", err)
 			} else {
@@ -96,7 +104,7 @@ func fetchWithBackoff(url string, maxRetries int, maximumBackoff float64) (*http
 	return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 }
 
-// FetchCommits fetches commits from a given URL
+// FetchCommitsChan fetches commits from a given URL
 func FetchCommits(url string, commitsChan chan<- []types.Commit) error {
 	maximumBackoff := 3200 * 1000.0
 	maxRetries := 10

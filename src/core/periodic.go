@@ -6,48 +6,56 @@ import (
 	"savannahtech/src/model"
 	"savannahtech/src/types"
 	"savannahtech/src/utils"
-	"time"
+	"strconv"
+
+	"github.com/robfig/cron/v3"
 )
 
 func PeriodicFetch(owner, repo string) error {
+	c := cron.New()
 	var commitStore model.CommitStore
 
-	interval := 10 * time.Second
-	ticker := time.NewTicker(interval)
-	defer ticker.Stop()
-
 	ownerRepo := owner + "/" + repo
+
+	// Construct the base URL for fetching commits
 	baseURL := config.GithubRepoURL + ownerRepo + "/commits"
 
-	// Start a goroutine to fetch commits periodically
-	go func() {
-		log.InfoLogger.Println("Fetching commits for " + ownerRepo + " ...")
+	c.AddFunc("@every 10s", func() {
+		// Get the last commit SHA stored
+		lastCommitDate := commitStore.GetLastCommitDate(ownerRepo)
 
-		for range ticker.C {
-			log.InfoLogger.Println("Running every " + interval.String())
+		// Construct the URL with the last commit SHA to fetch new commits
+		url := baseURL + "?since=" + lastCommitDate.Format("2006-01-02T15:04:05Z")
 
-			// Get the last commit date stored
-			lastCommitDate := commitStore.GetLastCommitDate(ownerRepo)
-			url := baseURL + "?since=" + lastCommitDate.String()
+		commitsChan := make(chan []types.Commit)
 
-			commitsChan := make(chan []types.Commit)
-			go func() {
-				if err := utils.FetchCommits(url, commitsChan); err != nil {
-					log.ErrorLogger.Printf("Failed to fetch commits: %v", err)
-					close(commitsChan)
-					return
-				}
-				close(commitsChan)
-			}()
+		// Fetch commits in a separate goroutine
+		go func() {
+			err := utils.FetchCommits(url, commitsChan)
+			if err != nil {
+				log.ErrorLogger.Printf("Failed to fetch commits: %v", err)
+				return
+			}
+			close(commitsChan) // Close channel after fetching all commits
+		}()
 
-			for commit := range commitsChan {
-				log.InfoLogger.Printf("Received %d commits for %s", len(commit), ownerRepo)
-				if err := StoreCommit(commit, ownerRepo); err != nil {
-					log.ErrorLogger.Printf("Error storing commits: %v", err)
-				}
+		for commit := range commitsChan {
+			log.InfoLogger.Println("Received commits: " + strconv.Itoa(len(commit)) + " for " + owner + "/" + repo)
+
+			// check if the commit is empty
+			if len(commit) == 0 {
+				continue
+			}
+
+			if err := StoreCommit(commit, owner+"/"+repo); err != nil {
+
+				log.ErrorLogger.Printf("Failed to store commits: %v", err)
+				return
 			}
 		}
-	}()
+
+	})
+	c.Start()
 
 	return nil
 }

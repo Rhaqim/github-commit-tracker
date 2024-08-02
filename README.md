@@ -45,13 +45,13 @@ To install GitHub Commit Tracker, follow these steps:
 Clone the GitHub Commit Tracker repository:
 
 ```bash
-git clone https://github.com/github-commit-tracker/github-commit-tracker.git
+git clone https://github.com/Rhaqim/savannahtech.git
 ```
 
 Change into the GitHub Commit Tracker directory:
 
 ```bash
-cd github-commit-tracker
+cd savannahtech
 ```
 
 Install Dependencies:
@@ -74,7 +74,6 @@ GitHub Commit Tracker requires the following environment variables to be set:
 - `DEFAULT_REPO`: The default repository to track on application startup.
 - `DEFAULT_OWNER`: The default owner of the default repository.
 - `DEFAULT_PERIOD`: The default period to fetch commit data on application startup.
-- `DEFAULT_PAGE_SIZE`: The default page size to fetch commit data on application startup.
 
 ## Usage
 
