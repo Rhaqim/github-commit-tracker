@@ -24,6 +24,7 @@ func PeriodicFetch(owner, repo string) error {
 		log.InfoLogger.Println("Fetching commits for " + ownerRepo + " ...")
 
 		for range ticker.C {
+			log.InfoLogger.Println("Running every " + interval.String())
 
 			// Get the last commit date stored
 			lastCommitDate := commitStore.GetLastCommitDate(ownerRepo)

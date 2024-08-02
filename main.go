@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 
 	"savannahtech/src/core"
@@ -11,6 +12,8 @@ import (
 	"savannahtech/src/model"
 	"savannahtech/src/router"
 )
+
+var wg sync.WaitGroup
 
 func main() {
 	// Initialise the logger
@@ -35,7 +38,11 @@ func main() {
 	signal.Notify(signalChan, os.Interrupt, syscall.SIGTERM)
 
 	// Start the event listeners
-	EventListeners()
+	wg.Add(1)
+	go EventListeners(&wg)
+
+	// Wait for the event listeners to start
+	wg.Wait()
 
 	// load the startup repo
 	if err := core.LoadStartupRepo(); err != nil {
@@ -58,7 +65,9 @@ func main() {
 
 }
 
-func EventListeners() {
+func EventListeners(wg *sync.WaitGroup) {
+	defer wg.Done()
+
 	// Start the event listener for repo events
 	go func() {
 		if err := core.GetRepoEvent(); err != nil {

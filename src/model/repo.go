@@ -43,7 +43,7 @@ func (R *RepositoryStore) GetRepositoryById(id uint) error {
 func (R *RepositoryStore) GetRepositoryByOwnerRepo(ownerRepo string) error {
 	var err = database.DB.Where("owner_repository = ?", ownerRepo).First(R).Error
 	if err != nil {
-		return fmt.Errorf("error retrieving repositories by owner and repo: %w", err)
+		return err
 	}
 
 	return nil
