@@ -78,7 +78,9 @@ func ProcessCommitData(owner, repo, fromDate string) error {
 
 	url := config.GithubRepoURL + ownerRepo + "/commits"
 
-	if fromDate != "" {
+	startDate := utils.ValidateDate(fromDate)
+
+	if startDate != "" {
 		url += "?since=" + fromDate
 	}
 

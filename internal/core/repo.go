@@ -23,7 +23,7 @@ It fetches the repository data from the GitHub API and stores it in the database
 
 It also publishes an event to the event queue indicating that the repository data has been fetched.
 */
-func ProcessRepositoryData(owner, repo, _ string) error {
+func ProcessRepositoryData(owner, repo, fromDate string) error {
 	log.InfoLogger.Println("Processing repository data")
 
 	repoStore := model.RepositoryStore{}
@@ -39,15 +39,15 @@ func ProcessRepositoryData(owner, repo, _ string) error {
 	err := repoStore.GetRepositoryByOwnerRepo(ownerRepo)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			return handleNewRepository(url, owner, repo, &repoStore, repoQueue, commitQueue)
+			return handleNewRepository(url, owner, repo, fromDate, &repoStore, repoQueue, commitQueue)
 		}
-		return fmt.Errorf("failed to get repository: %w", err)
+		return err
 	}
 
-	return handleExistingRepository(owner, repo, &repoStore, commitQueue)
+	return handleExistingRepository(owner, repo, fromDate, &repoStore, commitQueue)
 }
 
-func handleNewRepository(url, owner, repo string, repoStore *model.RepositoryStore, repoQueue, commitQueue *event.EventQueue) error {
+func handleNewRepository(url, owner, repo, fromDate string, repoStore *model.RepositoryStore, repoQueue, commitQueue *event.EventQueue) error {
 	log.InfoLogger.Println("Handling new repository for " + owner + "/" + repo)
 
 	// Fetch repository data from the remote source
@@ -74,7 +74,7 @@ func handleNewRepository(url, owner, repo string, repoStore *model.RepositorySto
 	err = repoStore.InsertRepository()
 	if err != nil {
 		if strings.Contains(err.Error(), "unique constraint") {
-			return handleExistingRepository(owner, repo, repoStore, commitQueue)
+			return handleExistingRepository(owner, repo, fromDate, repoStore, commitQueue)
 		}
 		return fmt.Errorf("failed to insert repository: %w", err)
 	}
@@ -82,6 +82,7 @@ func handleNewRepository(url, owner, repo string, repoStore *model.RepositorySto
 	// Publish new repository event
 	repoQueue.Publish(types.Event{
 		ID:      uuid.New().String(),
+		From:    fromDate,
 		Message: "Repository data fetched",
 		Type:    types.RepoEvent,
 		Owner:   owner,
@@ -91,7 +92,7 @@ func handleNewRepository(url, owner, repo string, repoStore *model.RepositorySto
 	return nil
 }
 
-func handleExistingRepository(owner, repo string, repoStore *model.RepositoryStore, commitQueue *event.EventQueue) error {
+func handleExistingRepository(owner, repo, fromDate string, repoStore *model.RepositoryStore, commitQueue *event.EventQueue) error {
 	log.InfoLogger.Println("Handling existing repository for " + owner + "/" + repo)
 
 	// Check if the repository is already indexed
@@ -106,6 +107,7 @@ func handleExistingRepository(owner, repo string, repoStore *model.RepositorySto
 		// Publish commit event for periodic fetching of commits
 		commitQueue.Publish(types.Event{
 			ID:      uuid.New().String(),
+			From:    fromDate,
 			Message: "Commit data fetched",
 			Type:    types.CommitEvent,
 			Owner:   owner,
@@ -117,6 +119,7 @@ func handleExistingRepository(owner, repo string, repoStore *model.RepositorySto
 	// Publish new repository event if not indexed
 	commitQueue.Publish(types.Event{
 		ID:      uuid.New().String(),
+		From:    fromDate,
 		Message: "New repository event",
 		Type:    types.NewRepo,
 		Owner:   owner,
@@ -135,6 +138,7 @@ func LoadStartupRepo() error {
 	var newRepoEvent *event.EventQueue = event.NewEventQueue(config.RepoEvent)
 	if err := newRepoEvent.Publish(types.Event{
 		ID:      uuid.New().String(),
+		From:    config.DefaultStartDate,
 		Message: "New repository event",
 		Type:    types.NewRepo,
 		Owner:   strings.ToLower(config.DefaultOwner),
