@@ -38,6 +38,7 @@ Before installing GitHub Commit Tracker, ensure that you have the following prer
 - Go 1.22 or higher
 - PostgreSQL 15 or higher
 - Redis 7.0 or higher
+- Docker Compose (optional)
 
 ### Installing GitHub Commit Tracker
 
@@ -61,6 +62,12 @@ Install Dependencies:
 go mod tidy
 ```
 
+To quickly test the application if you don't have PostgreSQL and Redis running locally, you can use Docker Compose:
+
+```bash
+docker-compose up -d
+```
+
 ## Configuration
 
 GitHub Commit Tracker requires the following environment variables to be set:
@@ -76,6 +83,8 @@ GitHub Commit Tracker requires the following environment variables to be set:
 - `DEFAULT_REPO`: The default repository to track on application startup.
 - `DEFAULT_START_DATE`: The default start date for fetching commit data. Should be in the format YYYY-MM-DD:HH:MM:SS e.g 2023-01-01:00:00:00
 - `REFETCH_INTERVAL`: The interval at which the application should get new commit data. Example: 1h, 2d, 30m, etc.
+
+> Note: You can copy the .env.example file to .env and modify the values accordingly.
 
 ## Usage
 
