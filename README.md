@@ -95,8 +95,10 @@ The application periodically fetches new commits from the configured GitHub repo
 
 To fetch and store commits for a new repository, you can make a GET request to the `/repositories/get/:owner/:repo` endpoint.
 
+> Optionally: You can specify a start date for fetching commits by adding the `start_date` query parameter. The start date should be in the format YYYY-MM-DD:HH:MM:SS e.g 2023-01-01:00:00:00
+
 ```curl
-curl -X GET "http://localhost:8080/repositories/get/github/github-commit-tracker"
+curl -X GET "http://localhost:8080/repositories/get/github/github-commit-tracker/2023-01-01:00:00:00"
 ```
 
 This will fetch and store the commits for the `github-commit-tracker` repository owned by the `github` user.

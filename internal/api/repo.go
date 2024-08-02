@@ -15,7 +15,7 @@ ProcessRepo processes the repository data for a repository.
 func ProcessRepo(c *gin.Context) {
 	owner := strings.ToLower(c.Param("owner"))
 	repo := strings.ToLower(c.Param("repo"))
-	fromDate := c.Query("fromDate")
+	fromDate := c.Query("start_date")
 
 	if err := core.ProcessRepositoryData(owner, repo, fromDate); err != nil {
 		c.JSON(400, gin.H{"developer_error": err.Error(), "message": "failed to process repository data"})
