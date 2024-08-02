@@ -8,6 +8,7 @@ import (
 	"savannahtech/src/model"
 	"savannahtech/src/types"
 	"savannahtech/src/utils"
+	"strings"
 
 	"github.com/google/uuid"
 )
@@ -42,6 +43,28 @@ func ProcessRepositoryData(owner, repo string) error {
 
 	err = repoStore.InsertRepository()
 	if err != nil {
+		// Check if the error is a unique constraint violation
+		if strings.Contains(err.Error(), "unique constraint") {
+			// get the repository from the database and check if it's indexed
+			var repository model.RepositoryStore
+			err = repository.GetRepositoryByOwnerRepo(owner + "/" + repo)
+			if err != nil {
+				return fmt.Errorf("failed to get repository: %w", err)
+			}
+
+			if repository.Indexed {
+				return fmt.Errorf("repository already indexed, skipping")
+			}
+
+			// publish a new repository event
+			repoQueue.Publish(types.Event{
+				ID:      uuid.New().String(),
+				Message: "New repository event",
+				Type:    types.NewRepo,
+				Owner:   owner,
+				Repo:    repo,
+			})
+		}
 		return fmt.Errorf("failed to insert repository: %w", err)
 	}
 

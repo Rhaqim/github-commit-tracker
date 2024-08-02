@@ -19,6 +19,7 @@ type RepositoryStore struct {
 	RepoCreatedAt   string `json:"repo_created_at,omitempty"`
 	RepoUpdatedAt   string `json:"repo_updated_at,omitempty"`
 	OwnerRepository string `json:"owner_repository,omitempty" gorm:"unique"`
+	Indexed         bool   `json:"indexed" default:"false"`
 }
 
 func (R *RepositoryStore) InsertRepository() error {
@@ -39,8 +40,8 @@ func (R *RepositoryStore) GetRepositoryById(id uint) error {
 	return nil
 }
 
-func (R *RepositoryStore) GetRepositoriesByOwnerAndRepo(owner, repo string) error {
-	var err = database.DB.Where("owner = ? AND repo = ?", owner, repo).Find(R).Error
+func (R *RepositoryStore) GetRepositoryByOwnerRepo(ownerRepo string) error {
+	var err = database.DB.Where("owner_repository = ?", ownerRepo).First(R).Error
 	if err != nil {
 		return fmt.Errorf("error retrieving repositories by owner and repo: %w", err)
 	}

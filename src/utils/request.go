@@ -3,7 +3,6 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"math"
 	"math/rand/v2"
 	"net/http"
@@ -14,9 +13,23 @@ import (
 	"savannahtech/src/types"
 )
 
+/*
+Exponential backoff algorithm
+
+This algorithm calculates the wait time between retries based on the number of retries and a maximum backoff time.
+
+The formula is:
+
+wait_time = min(2^n + random_number_milliseconds, maximum_backoff)
+
+where:
+n is the number of retries
+random_number_milliseconds is a random number between 0 and 50000
+maximum_backoff is the maximum backoff time in milliseconds
+*/
 func ExponentialBackoff(n uint, maximun_backoff float64) time.Duration {
 	// Generate a random number of milliseconds up to 1000
-	random_number_milliseconds := rand.Float64() * 50000
+	random_number_milliseconds := rand.Float64() * 200000
 
 	// Calculate the wait time
 	var wait_time float64 = math.Min((math.Exp2(float64(n)) + random_number_milliseconds), maximun_backoff)
@@ -24,13 +37,16 @@ func ExponentialBackoff(n uint, maximun_backoff float64) time.Duration {
 	return time.Duration(wait_time) * time.Millisecond
 }
 
-// Helper function to get the next page URL from the "Link" header
+/*
+Helper function to get the next page URL from the "Link" header
+
+Example of "Link" header: <https://api.github.com/repositories/1/commits?page=2>; rel="next", <https://api.github.com/repositories/1/commits?page=3>; rel="last"
+*/
 func GetNextPageURL(linkHeader string) string {
 	if linkHeader == "" {
 		return ""
 	}
 
-	// Example of "Link" header: <https://api.github.com/repositories/1/commits?page=2>; rel="next", <https://api.github.com/repositories/1/commits?page=3>; rel="last"
 	links := strings.Split(linkHeader, ",")
 	for _, link := range links {
 		parts := strings.Split(strings.TrimSpace(link), ";")
@@ -44,90 +60,122 @@ func GetNextPageURL(linkHeader string) string {
 	return ""
 }
 
-func FetchCommits(url string) ([]types.Commit, error) {
-	// Exponential backoff settings
+// Helper function to make an HTTP request with exponential backoff
+func fetchWithBackoff(url string, maxRetries int, maximumBackoff float64) (*http.Response, error) {
 	var resp *http.Response
 	var err error
 
-	maximum_backoff := 44000.0 // 44 seconds
+	for i := 0; i < maxRetries; i++ {
+		resp, err = http.Get(url)
+		if err != nil || resp.StatusCode != http.StatusOK {
+			if err != nil {
+				log.InfoLogger.Println("Error:", err)
+			} else {
+				switch resp.StatusCode {
+				case http.StatusNotFound:
+					return nil, fmt.Errorf("repository not found")
+				default:
+					log.InfoLogger.Println("Attempt", i+1, "fetching data from:", url, "failed with status code:", resp.StatusCode)
+				}
+			}
+
+			if i < maxRetries-1 {
+				duration := ExponentialBackoff(uint(i), maximumBackoff)
+				log.InfoLogger.Println("Sleeping for", duration)
+				time.Sleep(duration)
+			}
+			continue
+		}
+
+		return resp, nil
+	}
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to make request: %w", err)
+	}
+	return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+}
+
+// FetchCommits fetches commits from a given URL
+func FetchCommits(url string) ([]types.Commit, error) {
+	maximumBackoff := 3200 * 1000.0
 	maxRetries := 10
 
 	var allCommits []types.Commit
 
 	for {
-		for i := 0; i < maxRetries; i++ {
-			resp, err = http.Get(url)
-
-			if err != nil || resp.StatusCode != http.StatusOK {
-
-				if err != nil {
-					log.ErrorLogger.Println("Error:", err)
-				} else {
-					log.InfoLogger.Println("Status code:", resp.StatusCode)
-				}
-
-				duration := ExponentialBackoff(uint(i), maximum_backoff)
-				log.InfoLogger.Println("Sleeping for", duration)
-				time.Sleep(duration)
-				continue
-			}
-
-			break
-		}
-
+		resp, err := fetchWithBackoff(url, maxRetries, maximumBackoff)
 		if err != nil {
-			return nil, fmt.Errorf("failed to make request: %w", err)
+			return nil, err
 		}
+		body := resp.Body
 
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return nil, fmt.Errorf("failed to read response body: %w", err)
-		}
-
-		var data []types.Commit
-
-		err = json.Unmarshal(body, &data)
-		if err != nil {
+		data := []types.Commit{}
+		if err := json.NewDecoder(body).Decode(&data); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal data: %w", err)
 		}
 
-		// Accumulate the data from this page
 		allCommits = append(allCommits, data...)
 
-		// Check if there's a next page
 		nextURL := GetNextPageURL(resp.Header.Get("Link"))
 		if nextURL == "" {
 			break
 		}
 
-		// Update the URL for the next request
 		url = nextURL
-		resp.Body.Close()
 	}
 
 	return allCommits, nil
 }
 
+func FetchCommitsChan(url string, commitsChan chan<- []types.Commit) error {
+	maximumBackoff := 3200 * 1000.0
+	maxRetries := 10
+
+	for {
+		resp, err := fetchWithBackoff(url, maxRetries, maximumBackoff)
+		if err != nil {
+			return err
+		}
+		defer resp.Body.Close()
+
+		data := []types.Commit{}
+		if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
+			return fmt.Errorf("failed to unmarshal data: %w", err)
+		}
+
+		commitsChan <- data
+
+		nextURL := GetNextPageURL(resp.Header.Get("Link"))
+		if nextURL == "" {
+			break
+		}
+
+		url = nextURL
+	}
+
+	close(commitsChan)
+
+	return nil
+}
+
+// FetchRepository fetches a repository from a given URL
 func FetchRepository(url string) (types.Repository, error) {
-	resp, err := http.Get(url)
+	maximumBackoff := 3200 * 1000.0
+	maxRetries := 10
+
+	resp, err := fetchWithBackoff(url, maxRetries, maximumBackoff)
 	if err != nil {
-		return types.Repository{}, fmt.Errorf("error fetching repository: %w", err)
+		if err.Error() == "404 Not Found" {
+			return types.Repository{}, fmt.Errorf("repository not found")
+		}
+		return types.Repository{}, err
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		return types.Repository{}, fmt.Errorf("failed to get data for url: %s", url)
-	}
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return types.Repository{}, fmt.Errorf("error reading response body: %w", err)
-	}
-
 	var repository types.Repository
-	err = json.Unmarshal(body, &repository)
-	if err != nil {
-		return types.Repository{}, fmt.Errorf("error unmarshalling data: %w", err)
+	if err := json.NewDecoder(resp.Body).Decode(&repository); err != nil {
+		return types.Repository{}, fmt.Errorf("failed to unmarshal data: %w", err)
 	}
 
 	return repository, nil

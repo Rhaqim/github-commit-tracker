@@ -9,6 +9,7 @@ import (
 	"savannahtech/src/types"
 	"savannahtech/src/utils"
 	"sync"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -41,6 +42,19 @@ func StoreCommit(commits []types.Commit, ownerRepo string) error {
 		return fmt.Errorf("failed to insert commits: %w", err)
 	}
 
+	// update the repository to indicate that it has been indexed
+	var repository model.RepositoryStore
+	err = repository.GetRepositoryByOwnerRepo(ownerRepo)
+	if err != nil {
+		return fmt.Errorf("failed to get repository: %w", err)
+	}
+
+	repository.Indexed = true
+	err = repository.UpdateRepository()
+	if err != nil {
+		return fmt.Errorf("failed to update repository: %w", err)
+	}
+
 	return nil
 }
 
@@ -62,6 +76,46 @@ func ProcessCommitData(owner, repo string) error {
 	err = StoreCommit(commits, owner+"/"+repo)
 	if err != nil {
 		return fmt.Errorf("failed to store commits: %w", err)
+	}
+
+	log.InfoLogger.Println("Finished processing commits")
+
+	commitQueue.Publish(types.Event{
+		ID:      uuid.New().String(),
+		Message: "Commit data fetched",
+		Type:    types.CommitEvent,
+		Owner:   owner,
+		Repo:    repo,
+	})
+
+	return nil
+}
+
+func ProcessCommitDataChan(owner, repo string) error {
+	log.InfoLogger.Println("Processing commit data")
+
+	var err error
+
+	var commitQueue *event.EventQueue = event.NewEventQueue(config.CommitEvent)
+
+	var url string = config.GithubRepoURL + owner + "/" + repo + "/commits"
+
+	var commitsChan = make(chan []types.Commit)
+
+	err = utils.FetchCommitsChan(url, commitsChan)
+	if err != nil {
+		return fmt.Errorf("failed to fetch commits: %w", err)
+	}
+
+	select {
+	case commit := <-commitsChan:
+		log.InfoLogger.Println("Received commits: ", len(commit))
+		err = StoreCommit(commit, owner+"/"+repo)
+		if err != nil {
+			return fmt.Errorf("failed to store commits: %w", err)
+		}
+	case <-time.After(time.Hour * 1):
+		log.InfoLogger.Println("Timed out")
 	}
 
 	log.InfoLogger.Println("Finished processing commits")

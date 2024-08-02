@@ -12,7 +12,7 @@ func GetCommits(c *gin.Context) {
 
 	commits, err := commit.GetCommits()
 	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error(), "message": "failed to retrieve commits"})
+		c.JSON(500, gin.H{"developer_error": err.Error(), "message": "failed to retrieve commits"})
 		return
 	}
 
@@ -27,13 +27,13 @@ func GetTopCommitAuthors(c *gin.Context) {
 
 	topNInt, err := strconv.Atoi(topN)
 	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error(), "message": "invalid topN value"})
+		c.JSON(400, gin.H{"developer_error": err.Error(), "message": "invalid topN value"})
 		return
 	}
 
 	commitCounts, err := commit.GetTopCommitAuthors(topNInt)
 	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error(), "message": "failed to retrieve top commit authors"})
+		c.JSON(500, gin.H{"developer_error": err.Error(), "message": "failed to retrieve top commit authors"})
 		return
 	}
 
@@ -47,7 +47,7 @@ func GetCommitsByAuthor(c *gin.Context) {
 
 	commits, err := commit.GetCommitsByAuthor(repoName)
 	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error(), "message": "failed to retrieve commits for repository"})
+		c.JSON(500, gin.H{"developer_error": err.Error(), "message": "failed to retrieve commits for repository"})
 		return
 	}
 
