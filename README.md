@@ -62,14 +62,6 @@ Install Dependencies:
 go mod tidy
 ```
 
-To quickly test the application if you don't have PostgreSQL and Redis running locally, you can use Docker Compose:
-
-```bash
-docker-compose up -d
-```
-
-> Note: Make sure the postgres and redis configurations are correct in the docker-compose.yml file.
-
 ## Configuration
 
 GitHub Commit Tracker requires the following environment variables to be set:
@@ -92,7 +84,15 @@ GitHub Commit Tracker requires the following environment variables to be set:
 
 To use GitHub Commit Tracker, follow these steps:
 
-1. Start the application:
+- **OPTIONAL**: If you don't have PostgreSQL and Redis running locally, you can use the provided Docker Compose:
+
+```bash
+docker-compose up -d
+```
+
+> Note: Make sure the postgres and redis configurations are correct in the docker-compose.yml file.
+
+- Start the application:
 
 ```bash
 go run main.go
@@ -109,7 +109,7 @@ To fetch and store commits for a new repository, you can make a GET request to t
 > Optionally: You can specify a start date for fetching commits by adding the `start_date` query parameter. The start date should be in the format YYYY-MM-DD:HH:MM:SS e.g 2023-01-01:00:00:00
 
 ```curl
-curl -X GET "http://localhost:8080/repositories/get/github/github-commit-tracker/2023-01-01:00:00:00"
+curl -X GET "http://localhost:8080/repositories/get/github/github-commit-tracker?start_date=2023-01-01:00:00:00"
 ```
 
 This will fetch and store the commits for the `github-commit-tracker` repository owned by the `github` user.

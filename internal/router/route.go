@@ -13,7 +13,7 @@ func NewRouter() *gin.Engine {
 	repoGroup := r.Group("/repositories")
 	{
 		repoGroup.GET("/get/:owner/:repo", api.GetRepo)
-		repoGroup.GET("/:owner/:repo/:start_date", api.ProcessRepo)
+		repoGroup.GET("/:owner/:repo", api.ProcessRepo)
 	}
 
 	commitGroup := r.Group("/commits")
