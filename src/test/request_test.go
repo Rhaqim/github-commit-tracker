@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"savannahtech/src/types"
 	"savannahtech/src/utils"
 	"testing"
 	"time"
@@ -51,24 +52,65 @@ func TestGetNextPageURL(t *testing.T) {
 func TestFetchCommits(t *testing.T) {
 	handler := func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Link", `{<http://example.com?page=2>; rel="next"}`)
+		// Simulating only one page of results with no pagination
+		w.Header().Set("Link", ``)
 		fmt.Fprintln(w, `[{"sha":"abc123","author": {"login":"Author"},"message":"Commit message","date":"2023-07-30T12:00:00Z","url":"http://example.com"}]`)
 	}
 	server := httptest.NewServer(http.HandlerFunc(handler))
 	defer server.Close()
 
 	url := server.URL
-	commits, err := utils.FetchCommits(url)
-	if err != nil {
-		t.Fatalf("expected no error, got %v", err)
+
+	commitChan := make(chan []types.Commit)
+	errChan := make(chan error)
+	defer close(errChan)
+
+	// Set a timeout for the test
+	testTimeout := time.After(2 * time.Second)
+
+	// Run the fetch operation in a goroutine
+	go func() {
+		err := utils.FetchCommits(url, commitChan)
+		if err != nil {
+			errChan <- err
+		}
+		close(commitChan) // Close channel after fetching all commits
+	}()
+
+	// Variable to store any potential error from the test
+	var testErr error
+
+	// Process the commits from the channel
+Loop:
+	for {
+		select {
+		case commit, ok := <-commitChan:
+			if !ok {
+				break Loop
+			}
+			if len(commit) != 1 {
+				testErr = fmt.Errorf("expected 1 commit, got %d", len(commit))
+				break Loop
+			}
+
+			if commit[0].Sha != "abc123" {
+				testErr = fmt.Errorf("expected SHA to be 'abc123', got %v", commit[0].Sha)
+				break Loop
+			}
+		case err := <-errChan:
+			if err != nil {
+				t.Fatalf("expected no error, got %v", err)
+			}
+			break Loop
+		case <-testTimeout:
+			t.Fatalf("test timed out")
+			break Loop
+		}
 	}
 
-	if len(commits) != 1 {
-		t.Fatalf("expected 1 commit, got %d", len(commits))
-	}
-
-	if commits[0].Sha != "abc123" {
-		t.Errorf("expected SHA to be 'abc123', got %v", commits[0].Sha)
+	// Check if there was an error during test validation
+	if testErr != nil {
+		t.Fatalf("test validation failed: %v", testErr)
 	}
 }
 

@@ -1,61 +1,52 @@
 package core
 
 import (
-	"fmt"
 	"savannahtech/src/config"
 	"savannahtech/src/log"
 	"savannahtech/src/model"
+	"savannahtech/src/types"
 	"savannahtech/src/utils"
 	"time"
 )
 
 func PeriodicFetch(owner, repo string) error {
-	errChan := make(chan error)
-	defer close(errChan)
-
 	var commitStore model.CommitStore
 
-	interval := 1 * time.Hour
-
+	interval := 10 * time.Second
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 
-	// Construct the base URL for fetching commits
-	baseURL := config.GithubRepoURL + owner + "/" + repo + "/commits"
+	ownerRepo := owner + "/" + repo
+	baseURL := config.GithubRepoURL + ownerRepo + "/commits"
 
 	// Start a goroutine to fetch commits periodically
 	go func() {
-		for range ticker.C {
-			// Get the last commit SHA stored
-			lastCommitDate := commitStore.GetLastCommitDate()
+		log.InfoLogger.Println("Fetching commits for " + ownerRepo + " ...")
 
-			// Construct the URL with the last commit SHA to fetch new commits
+		for range ticker.C {
+
+			// Get the last commit date stored
+			lastCommitDate := commitStore.GetLastCommitDate(ownerRepo)
 			url := baseURL + "?since=" + lastCommitDate.String()
 
-			// Fetch the commits from the constructed URL
-			commits, err := utils.FetchCommits(url)
-			if err != nil {
-				log.ErrorLogger.Printf("Error fetching commits: %v", err)
-				errChan <- err
-				continue
-			}
+			commitsChan := make(chan []types.Commit)
+			go func() {
+				if err := utils.FetchCommits(url, commitsChan); err != nil {
+					log.ErrorLogger.Printf("Failed to fetch commits: %v", err)
+					close(commitsChan)
+					return
+				}
+				close(commitsChan)
+			}()
 
-			// Store the fetched commits in the database
-			err = StoreCommit(commits, owner+"/"+repo)
-			if err != nil {
-				log.ErrorLogger.Printf("Error storing commits: %v", err)
-				errChan <- err
-				continue
+			for commit := range commitsChan {
+				log.InfoLogger.Printf("Received %d commits for %s", len(commit), ownerRepo)
+				if err := StoreCommit(commit, ownerRepo); err != nil {
+					log.ErrorLogger.Printf("Error storing commits: %v", err)
+				}
 			}
 		}
 	}()
-
-	// Handle errors from the error channel
-	for err := range errChan {
-		if err != nil {
-			return fmt.Errorf("failed to process commits: %w", err)
-		}
-	}
 
 	return nil
 }

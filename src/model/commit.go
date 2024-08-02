@@ -47,8 +47,8 @@ func (C *CommitStore) GetCommitById(id uint) error {
 	return nil
 }
 
-func (C *CommitStore) GetLastCommitDate() time.Time {
-	err := database.DB.Order("date desc").First(C).Error
+func (C *CommitStore) GetLastCommitDate(ownerRepo string) time.Time {
+	err := database.DB.Order("date desc").Where("owner_repository = ?", ownerRepo).First(C).Error
 	if err != nil {
 		return time.Time{}
 	}

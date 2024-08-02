@@ -97,38 +97,7 @@ func fetchWithBackoff(url string, maxRetries int, maximumBackoff float64) (*http
 }
 
 // FetchCommits fetches commits from a given URL
-func FetchCommits(url string) ([]types.Commit, error) {
-	maximumBackoff := 3200 * 1000.0
-	maxRetries := 10
-
-	var allCommits []types.Commit
-
-	for {
-		resp, err := fetchWithBackoff(url, maxRetries, maximumBackoff)
-		if err != nil {
-			return nil, err
-		}
-		body := resp.Body
-
-		data := []types.Commit{}
-		if err := json.NewDecoder(body).Decode(&data); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal data: %w", err)
-		}
-
-		allCommits = append(allCommits, data...)
-
-		nextURL := GetNextPageURL(resp.Header.Get("Link"))
-		if nextURL == "" {
-			break
-		}
-
-		url = nextURL
-	}
-
-	return allCommits, nil
-}
-
-func FetchCommitsChan(url string, commitsChan chan<- []types.Commit) error {
+func FetchCommits(url string, commitsChan chan<- []types.Commit) error {
 	maximumBackoff := 3200 * 1000.0
 	maxRetries := 10
 
@@ -153,8 +122,6 @@ func FetchCommitsChan(url string, commitsChan chan<- []types.Commit) error {
 
 		url = nextURL
 	}
-
-	close(commitsChan)
 
 	return nil
 }

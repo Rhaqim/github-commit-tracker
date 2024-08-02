@@ -8,8 +8,8 @@ import (
 	"savannahtech/src/model"
 	"savannahtech/src/types"
 	"savannahtech/src/utils"
+	"strconv"
 	"sync"
-	"time"
 
 	"github.com/google/uuid"
 )
@@ -61,65 +61,30 @@ func StoreCommit(commits []types.Commit, ownerRepo string) error {
 func ProcessCommitData(owner, repo string) error {
 	log.InfoLogger.Println("Processing commit data")
 
-	var err error
-	var commits []types.Commit
+	commitQueue := event.NewEventQueue(config.CommitEvent)
 
-	var commitQueue *event.EventQueue = event.NewEventQueue(config.CommitEvent)
+	url := config.GithubRepoURL + owner + "/" + repo + "/commits"
 
-	var url string = config.GithubRepoURL + owner + "/" + repo + "/commits"
+	commitsChan := make(chan []types.Commit)
 
-	commits, err = utils.FetchCommits(url)
-	if err != nil {
-		return fmt.Errorf("failed to fetch commits: %w", err)
-	}
-
-	err = StoreCommit(commits, owner+"/"+repo)
-	if err != nil {
-		return fmt.Errorf("failed to store commits: %w", err)
-	}
-
-	log.InfoLogger.Println("Finished processing commits")
-
-	commitQueue.Publish(types.Event{
-		ID:      uuid.New().String(),
-		Message: "Commit data fetched",
-		Type:    types.CommitEvent,
-		Owner:   owner,
-		Repo:    repo,
-	})
-
-	return nil
-}
-
-func ProcessCommitDataChan(owner, repo string) error {
-	log.InfoLogger.Println("Processing commit data")
-
-	var err error
-
-	var commitQueue *event.EventQueue = event.NewEventQueue(config.CommitEvent)
-
-	var url string = config.GithubRepoURL + owner + "/" + repo + "/commits"
-
-	var commitsChan = make(chan []types.Commit)
-
-	err = utils.FetchCommitsChan(url, commitsChan)
-	if err != nil {
-		return fmt.Errorf("failed to fetch commits: %w", err)
-	}
-
-	select {
-	case commit := <-commitsChan:
-		log.InfoLogger.Println("Received commits: ", len(commit))
-		err = StoreCommit(commit, owner+"/"+repo)
+	// Fetch commits in a separate goroutine
+	go func() {
+		err := utils.FetchCommits(url, commitsChan)
 		if err != nil {
+			log.ErrorLogger.Printf("Failed to fetch commits: %v", err)
+		}
+		close(commitsChan) // Close channel after fetching all commits
+	}()
+
+	for commit := range commitsChan {
+		log.InfoLogger.Println("Received commits: " + strconv.Itoa(len(commit)) + " for " + owner + "/" + repo)
+
+		if err := StoreCommit(commit, owner+"/"+repo); err != nil {
 			return fmt.Errorf("failed to store commits: %w", err)
 		}
-	case <-time.After(time.Hour * 1):
-		log.InfoLogger.Println("Timed out")
 	}
 
 	log.InfoLogger.Println("Finished processing commits")
-
 	commitQueue.Publish(types.Event{
 		ID:      uuid.New().String(),
 		Message: "Commit data fetched",
