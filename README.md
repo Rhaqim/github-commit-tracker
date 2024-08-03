@@ -145,7 +145,8 @@ go test -v ./internal/test/...
 
 The following improvements are planned for future releases:
 
-- interface for fetching 
+- Dependency injection for fetching data
+- Caching last fetched date bedore interruption
 
 ## License
 
