@@ -6,6 +6,7 @@ GitHub Commit Tracker is an application designed to fetch and store commit data 
 
 - [GitHub Commit Tracker](#github-commit-tracker)
   - [Table of Contents](#table-of-contents)
+  - [System Architecture](#system-architecture)
   - [Features](#features)
   - [Prerequisites](#prerequisites)
   - [How to Run GitHub Commit Tracker](#how-to-run-github-commit-tracker)
@@ -17,6 +18,19 @@ GitHub Commit Tracker is an application designed to fetch and store commit data 
   - [Testing](#testing)
   - [Feature Improvements](#feature-improvements)
   - [License](#license)
+  
+## System Architecture
+
+The GitHub Commit Tracker system is designed with a modular architecture that includes the following components:
+
+![System Architecture](architecture.png)
+
+- **API Server**: The API server is responsible for handling incoming requests and returning responses. It uses the Gin web framework for routing and handling requests.
+- **Redis Event Queue**: The Redis component is used for event queuing, utilising the Redis pub/sub feature.
+- **Data Fetcher**: The data fetcher is responsible for fetching new commit data from GitHub repositories. It uses the GitHub API and go http client for making requests.
+- **Data Store**: The data store is responsible for storing commit data in a PostgreSQL database. It uses the Gorm ORM for database operations.
+
+The system uses channels to manage paginated responses and implements exponential backoff to handle GitHub API rate limiting.
 
 ## Features
 
@@ -145,8 +159,10 @@ go test -v ./internal/test/...
 
 The following improvements are planned for future releases:
 
-- Dependency injection for fetching data
-- Caching last fetched date bedore interruption
+- Dependency injection
+- Caching last fetched date before interruption
+- Restart the period fetcher for all repositories in the database
+- Fetch multiple repositories at once on startup
 
 ## License
 
