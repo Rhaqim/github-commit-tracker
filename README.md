@@ -23,7 +23,7 @@ GitHub Commit Tracker is an application designed to fetch and store commit data 
 
 The GitHub Commit Tracker system is designed with a modular architecture that includes the following components:
 
-![System Architecture](architecture.png)
+![System Architecture](architecture.jpg)
 
 - **API Server**: The API server is responsible for handling incoming requests and returning responses. It uses the Gin web framework for routing and handling requests.
 - **Redis Event Queue**: The Redis component is used for event queuing, utilising the Redis pub/sub feature.
