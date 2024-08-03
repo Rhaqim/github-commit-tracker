@@ -16,6 +16,7 @@ GitHub Commit Tracker is an application designed to fetch and store commit data 
     - [Top Commit Author](#top-commit-author)
     - [Commits by Repository](#commits-by-repository)
   - [Error Handling](#error-handling)
+  - [Testing](#testing)
   - [Contributing](#contributing)
   - [License](#license)
 
@@ -137,6 +138,14 @@ This will retrieve the commits for the `chromium` repository.
 ## Error Handling
 
 If an error occurs during the execution of the application, it will return a 500 status code with a JSON response containing an error message. Application errors are stored in the `error` file in the logs directory.
+
+## Testing
+
+All the tests are located in the `internal/test` directory. To run the tests, use the following command:
+
+```bash
+go test -v ./internal/test/...
+```
 
 ## Contributing
 
