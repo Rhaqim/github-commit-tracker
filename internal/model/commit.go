@@ -105,12 +105,14 @@ func (C *CommitStore) GetTopCommitAuthors(topN int) ([]types.CommitCount, error)
 	return results, nil
 }
 
-func (C *CommitStore) GetCommitsByAuthor(repoName string) ([]CommitStore, error) {
+func (C *CommitStore) GetCommitsByAuthor(repoName string, limit, offset int) ([]CommitStore, error) {
 	var commits []CommitStore
 
-	// Perform a join between the RepositoryStore and CommitStore tables
+	// Perform a join between the RepositoryStore and CommitStore tables with pagination
 	err := database.DB.Joins("JOIN repository_stores ON repository_stores.owner_repository = commit_stores.owner_repository").
 		Where("repository_stores.name = ?", repoName).
+		Limit(limit).
+		Offset(offset).
 		Find(&commits).Error
 
 	if err != nil {
