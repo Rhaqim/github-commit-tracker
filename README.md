@@ -109,10 +109,10 @@ To fetch and store commits for a new repository, you can make a GET request to t
 > Optionally: You can specify a start date for fetching commits by adding the `start_date` query parameter. The start date should be in the format YYYY-MM-DD:HH:MM:SS e.g 2023-01-01:00:00:00
 
 ```curl
-curl -X GET "http://localhost:8080/repositories/get/github/github-commit-tracker?start_date=2023-01-01:00:00:00"
+curl -X GET "http://localhost:8080/repositories/get/chromium/chromium?start_date=2023-01-01:00:00:00"
 ```
 
-This will fetch and store the commits for the `github-commit-tracker` repository owned by the `github` user.
+This will fetch and store the commits for the `chromium` repository owned by the `chromium` user.
 
 ### Top Commit Author
 
@@ -129,10 +129,10 @@ This will retrieve the top 10 commit authors based on the commit counts.
 You can retrieve the commits by repository using the GetCommitsByRepository function. The responses are paginated, so you can specify the page number and page size to retrieve the desired number of commits.
 
 ```curl
-curl -X GET "http://localhost:8080/commits/github-commit-tracker?page=1&page_size=10"
+curl -X GET "http://localhost:8080/commits/chromium?page=1&page_size=10"
 ```
 
-This will retrieve the commits for the `github-commit-tracker` repository.
+This will retrieve the commits for the `chromium` repository.
 
 ## Error Handling
 

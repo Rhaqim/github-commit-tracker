@@ -11,24 +11,6 @@ import (
 )
 
 /*
-GetCommits returns a list of commits for a repository.
-
-It retrieves the commits from the database and returns them as a JSON response.
-*/
-func GetCommits(c *gin.Context) {
-	var commit model.CommitStore
-
-	commits, err := commit.GetCommits()
-	if err != nil {
-		c.JSON(500, gin.H{"developer_error": err.Error(), "message": "failed to retrieve commits"})
-		return
-	}
-
-	c.JSON(200, gin.H{"commits": commits, "message": "commits retrieved successfully"})
-
-}
-
-/*
 GetTopCommitAuthors returns the top N commit authors in the database.
 
 It retrieves the top N commit authors from the database and returns them as a JSON response.
