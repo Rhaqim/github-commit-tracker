@@ -126,10 +126,10 @@ This will retrieve the top 10 commit authors based on the commit counts.
 
 ### Commits by Repository
 
-You can retrieve the commits by repository using the GetCommitsByRepository function.
+You can retrieve the commits by repository using the GetCommitsByRepository function. The responses are paginated, so you can specify the page number and page size to retrieve the desired number of commits.
 
 ```curl
-curl -X GET "http://localhost:8080/commits/github-commit-tracker"
+curl -X GET "http://localhost:8080/commits/github-commit-tracker?page=1&page_size=10"
 ```
 
 This will retrieve the commits for the `github-commit-tracker` repository.

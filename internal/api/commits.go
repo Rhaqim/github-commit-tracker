@@ -64,7 +64,7 @@ func GetCommitsByRepo(c *gin.Context) {
 	repoName := strings.ToLower(c.Param("repoName"))
 
 	pageStr := c.Query("page")
-	sizeStr := c.Query("size")
+	sizeStr := c.Query("page_size")
 
 	size, offset := utils.Paigenation(pageStr, sizeStr)
 
