@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"savannahtech/internal/log"
 	"savannahtech/internal/types"
 	"savannahtech/internal/utils"
 )
@@ -51,6 +52,8 @@ func TestGetNextPageURL(t *testing.T) {
 }
 
 func TestFetchCommits(t *testing.T) {
+	log.Init()
+
 	handler := func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		// Simulating only one page of results with no pagination
@@ -116,6 +119,8 @@ Loop:
 }
 
 func TestFetchRepository(t *testing.T) {
+	log.Init()
+
 	handler := func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprintln(w, `{"name":"example-repo","owner":{"login":"example-owner"}}`)

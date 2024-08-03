@@ -13,6 +13,11 @@ var (
 )
 
 func Init() {
+	if InfoLogger != nil && ErrorLogger != nil {
+		// Logger already initialized
+		return
+	}
+
 	logDir := filepath.Join("logs", time.Now().Format("2006-01-02"))
 	if err := os.MkdirAll(logDir, 0755); err != nil {
 		log.Fatal("Failed to create log directory:", err)
