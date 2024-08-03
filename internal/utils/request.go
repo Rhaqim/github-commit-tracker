@@ -63,7 +63,7 @@ func GetNextPageURL(linkHeader string) string {
 
 // Helper function to make an HTTP request with exponential backoff
 func fetchWithBackoff(url string, maxRetries int, maximumBackoff float64) (*http.Response, error) {
-	log.InfoLogger.Println("Fetching data from", url)
+	log.InfoLogger.Printf("Fetching data from %s\n", url)
 
 	var resp *http.Response
 	var err error
@@ -79,15 +79,16 @@ func fetchWithBackoff(url string, maxRetries int, maximumBackoff float64) (*http
 			} else {
 				switch resp.StatusCode {
 				case http.StatusNotFound:
+					log.ErrorLogger.Printf("Repository not found: %s\n", url)
 					return nil, fmt.Errorf("repository not found")
 				default:
-					log.InfoLogger.Println("Attempt", i+1, "fetching data from:", url, "failed with status code:", resp.StatusCode)
+					log.InfoLogger.Printf("Attempt %d fetching data from %s failed with status code: %d\n", i+1, url, resp.StatusCode)
 				}
 			}
 
 			if i < maxRetries-1 {
 				duration := ExponentialBackoff(uint(i), maximumBackoff)
-				log.InfoLogger.Println("Sleeping for", duration)
+				log.InfoLogger.Printf("Retrying in %s\n", duration)
 				time.Sleep(duration)
 			}
 			continue

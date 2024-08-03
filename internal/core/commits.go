@@ -70,7 +70,7 @@ It fetches the commit data from the GitHub API and stores it in the database.
 It also publishes an event to the event queue indicating that the commit data has been fetched.
 */
 func ProcessCommitData(owner, repo, fromDate string) error {
-	log.InfoLogger.Println("Processing commit data")
+	log.InfoLogger.Printf("Processing commit data for %s/%s\n", owner, repo)
 
 	commitQueue := event.NewEventQueue(config.PeriodEvent)
 
@@ -103,7 +103,7 @@ func ProcessCommitData(owner, repo, fromDate string) error {
 		}
 	}
 
-	log.InfoLogger.Println("Finished indexing initial commits")
+	log.InfoLogger.Printf("Finished indexing initial commits for %s/%s\n", owner, repo)
 
 	commitQueue.Publish(types.Event{
 		ID:      uuid.New().String(),

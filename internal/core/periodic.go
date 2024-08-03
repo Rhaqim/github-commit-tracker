@@ -19,7 +19,9 @@ It uses a cron job to fetch commit data at a specified interval.
 
 It fetches the commit data from the GitHub API and stores it in the database.
 */
-func PeriodicFetch(owner, repo, fromDate string) error {
+func PeriodicFetch(owner, repo, _ string) error {
+	log.InfoLogger.Printf("Started periodic commit fetching for %s/%s every %s\n", owner, repo, config.RefetchInterval)
+
 	c := cron.New()
 	var commitStore model.CommitStore
 

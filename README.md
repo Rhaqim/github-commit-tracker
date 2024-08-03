@@ -7,17 +7,15 @@ GitHub Commit Tracker is an application designed to fetch and store commit data 
 - [GitHub Commit Tracker](#github-commit-tracker)
   - [Table of Contents](#table-of-contents)
   - [Features](#features)
-  - [Installation](#installation)
-    - [Prerequisites](#prerequisites)
-    - [Installing GitHub Commit Tracker](#installing-github-commit-tracker)
-  - [Configuration](#configuration)
+  - [Prerequisites](#prerequisites)
+  - [How to Run GitHub Commit Tracker](#how-to-run-github-commit-tracker)
   - [Usage](#usage)
     - [Fetching and Storing Commits](#fetching-and-storing-commits)
     - [Top Commit Author](#top-commit-author)
     - [Commits by Repository](#commits-by-repository)
   - [Error Handling](#error-handling)
   - [Testing](#testing)
-  - [Contributing](#contributing)
+  - [Feature Improvements](#feature-improvements)
   - [License](#license)
 
 ## Features
@@ -30,40 +28,38 @@ GitHub Commit Tracker is an application designed to fetch and store commit data 
 - **Commit Data Storage**: The application stores commit data in a PostgreSQL database.
 - **Top Commit Author**: The application fetches and displays the top N commit authors based on commit counts.
 
-## Installation
-
-### Prerequisites
+## Prerequisites
 
 Before installing GitHub Commit Tracker, ensure that you have the following prerequisites installed:
 
 - Go 1.22 or higher
-- PostgreSQL 15 or higher
-- Redis 7.0 or higher
-- Docker Compose (optional)
+- Docker (Docker Compose)
+- PostgreSQL 15 or higher (optional)
+- Redis 7.0 or higher (optional)
 
-### Installing GitHub Commit Tracker
+## How to Run GitHub Commit Tracker
 
 To install GitHub Commit Tracker, follow these steps:
 
-Clone the GitHub Commit Tracker repository:
+- **Clone the GitHub Commit Tracker repository:**
 
 ```bash
 git clone https://github.com/Rhaqim/savannahtech.git
 ```
 
-Change into the GitHub Commit Tracker directory:
+- **Change into the GitHub Commit Tracker directory:**
 
 ```bash
 cd savannahtech
 ```
 
-Install Dependencies:
+- **Install Dependencies:**
 
 ```bash
 go mod tidy
 ```
 
-## Configuration
+- **Set the environment variables in the .env file:**
 
 GitHub Commit Tracker requires the following environment variables to be set:
 
@@ -81,23 +77,21 @@ GitHub Commit Tracker requires the following environment variables to be set:
   
 > You can copy the `.env.example` file to `.env` and modify the values accordingly.
 
-## Usage
-
-To use GitHub Commit Tracker, follow these steps:
-
-- **OPTIONAL**: If you don't have PostgreSQL and Redis running locally, you can use the provided Docker Compose:
+- **Run the Docker Compose:**
 
 ```bash
 docker-compose up -d
 ```
 
-> Note: Make sure the postgres and redis configurations are correct in the docker-compose.yml file.
+> Note: If you don't have Docker Compose installed, but have PostgreSQL and Redis running locally, you can provide the correct configurations to setup connection to the databases and Redis in the .env file.
 
-- Start the application:
+- **Start the application:**
 
 ```bash
 go run main.go
 ```
+
+## Usage
 
 The application will start fetching commit data from the specified repository in the .env file and storing it in the PostgreSQL database.
 
@@ -147,15 +141,11 @@ All the tests are located in the `internal/test` directory. To run the tests, us
 go test -v ./internal/test/...
 ```
 
-## Contributing
+## Feature Improvements
 
-Contributions are welcome! If you have any suggestions or improvements, please open an issue or submit a pull request.
+The following improvements are planned for future releases:
 
-1. Fork the repository.
-2. Create a new branch for your changes.
-3. Make your changes and commit them with a descriptive commit message.
-4. Push your changes to your forked repository.
-5. Create a pull request to the main repository.
+- interface for fetching 
 
 ## License
 

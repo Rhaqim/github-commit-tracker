@@ -1,6 +1,7 @@
 package log
 
 import (
+	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -12,7 +13,12 @@ var (
 	ErrorLogger *log.Logger
 )
 
-func Init() {
+/*
+Init initializes the logger with the given logToFileAndTerminal flag.
+If logToFileAndTerminal is true, the logger will log to both the terminal and a file.
+If logToFileAndTerminal is false, the logger will only log to the file.
+*/
+func Init(logToFileAndTerminal bool) {
 	if InfoLogger != nil && ErrorLogger != nil {
 		// Logger already initialized
 		return
@@ -34,8 +40,17 @@ func Init() {
 		log.Fatal("Failed to open error log file:", err)
 	}
 
+	// Create multi-writer to write to both file and terminal if logToFileAndTerminal is true
+	var infoWriter io.Writer = infoLogFile
+	var errorWriter io.Writer = errorLogFile
+
+	if logToFileAndTerminal {
+		infoWriter = io.MultiWriter(os.Stdout, infoLogFile)
+		errorWriter = io.MultiWriter(os.Stderr, errorLogFile)
+	}
+
 	// Initialize loggers
-	InfoLogger = log.New(infoLogFile, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
-	ErrorLogger = log.New(errorLogFile, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
+	InfoLogger = log.New(infoWriter, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
+	ErrorLogger = log.New(errorWriter, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
 
 }

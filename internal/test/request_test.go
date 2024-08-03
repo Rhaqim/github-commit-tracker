@@ -52,7 +52,7 @@ func TestGetNextPageURL(t *testing.T) {
 }
 
 func TestFetchCommits(t *testing.T) {
-	log.Init()
+	log.Init(false)
 
 	handler := func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -119,7 +119,7 @@ Loop:
 }
 
 func TestFetchRepository(t *testing.T) {
-	log.Init()
+	log.Init(false)
 
 	handler := func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

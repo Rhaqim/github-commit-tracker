@@ -14,7 +14,7 @@ import (
 
 func main() {
 	// Initialise the logger
-	log.Init()
+	log.Init(true)
 
 	// Initialize the database
 	database.Init()

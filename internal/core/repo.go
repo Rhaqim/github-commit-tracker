@@ -79,6 +79,8 @@ func handleNewRepository(url, owner, repo, fromDate string, repoStore *model.Rep
 		return fmt.Errorf("failed to insert repository: %w", err)
 	}
 
+	log.InfoLogger.Printf("Successfully accessed repository %s/%s\n", owner, repo)
+
 	// Publish new repository event
 	repoQueue.Publish(types.Event{
 		ID:      uuid.New().String(),
@@ -133,7 +135,7 @@ func LoadStartupRepo() error {
 	// wait for 2 seconds to allow the event listeners to start
 	<-time.After(2 * time.Second)
 
-	log.InfoLogger.Println("Loading startup repository")
+	log.InfoLogger.Printf("Loading startup repository %s/%s\n", config.DefaultOwner, config.DefaultRepo)
 
 	var newRepoEvent *event.EventQueue = event.NewEventQueue(config.RepoEvent)
 	if err := newRepoEvent.Publish(types.Event{
