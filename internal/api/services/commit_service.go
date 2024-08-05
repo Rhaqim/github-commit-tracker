@@ -10,6 +10,7 @@ import (
 	"github.com/Rhaqim/savannahtech/internal/core/entities"
 	"github.com/Rhaqim/savannahtech/internal/core/repositories"
 	"github.com/Rhaqim/savannahtech/internal/core/types"
+	"github.com/Rhaqim/savannahtech/internal/events"
 	"github.com/Rhaqim/savannahtech/internal/utils"
 	"github.com/Rhaqim/savannahtech/pkg/logger"
 	"github.com/robfig/cron/v3"
@@ -30,21 +31,15 @@ func FetchTopNCommitAuthors(n string) ([]entities.CommitCount, error) {
 	return repositories.CommitStore.GetTopNCommitAuthors(nInt)
 }
 
-func ProcessCommitData(event_ entities.Event) error {
+func ProcessCommitData(owner, repo, startDate string) error {
 	var err error
-
-	var owner, repo, start_date string = event_.Owner, event_.Repo, event_.StartDate
-
-	if event_.Type != entities.CommitEvent {
-		return PeriodicFetch(owner, repo, start_date)
-	}
 
 	ownerRepo := fmt.Sprintf("%s/%s", owner, repo)
 
 	url := fmt.Sprintf("https://api.github.com/repos/%s/commits", ownerRepo)
 
-	if start_date != "" {
-		url += "?since=" + start_date
+	if startDate != "" {
+		url += "?since=" + startDate
 	}
 
 	err = processCommit(url, ownerRepo)
@@ -54,10 +49,19 @@ func ProcessCommitData(event_ entities.Event) error {
 
 	logger.InfoLogger.Printf("Completed initial commit fetching for %s/%s\n", owner, repo)
 
-	err = PeriodicFetch(owner, repo, start_date)
-	if err != nil {
-		return fmt.Errorf("failed to start periodic commit fetching: %w", err)
+	event := entities.Event{
+		StartDate: startDate,
+		Type:      entities.PeriodEvnt,
+		Owner:     owner,
+		Repo:      repo,
 	}
+
+	events.SendEvent(event)
+
+	// err = PeriodicFetch(owner, repo, startDate)
+	// if err != nil {
+	// 	return fmt.Errorf("failed to start periodic commit fetching: %w", err)
+	// }
 
 	return err
 }

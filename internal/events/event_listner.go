@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	EventChan = make(chan entities.Event)
+	EventChan = make(chan entities.Event, 3)
 	ErrorChan = make(chan error, 1)
 )
 

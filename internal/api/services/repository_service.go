@@ -2,7 +2,9 @@ package services
 
 import (
 	"fmt"
+	"time"
 
+	"github.com/Rhaqim/savannahtech/config"
 	"github.com/Rhaqim/savannahtech/internal/api/github"
 	"github.com/Rhaqim/savannahtech/internal/core/entities"
 	"github.com/Rhaqim/savannahtech/internal/core/repositories"
@@ -117,4 +119,30 @@ func convertRepositoryType(repo_ types.Repository, ownerRepo string) entities.Re
 	}
 
 	return repo
+}
+
+func LoadStartupRepo() {
+	// wait for 2 seconds to allow the event listeners to start
+	<-time.After(2 * time.Second)
+
+	owner := config.Config.DefaultOwner
+	repo := config.Config.DefaultRepo
+	startDate := config.Config.DefaultStartDate
+
+	logger.InfoLogger.Printf("Loading startup repository %s/%s\n", owner, repo)
+
+	event := entities.Event{
+		StartDate: startDate,
+		Type:      entities.RepoEvent,
+		Owner:     owner,
+		Repo:      repo,
+	}
+
+	events.SendEvent(event)
+
+	// err := ProcessRepository(owner, repo, startDate)
+	// if err != nil {
+	// 	logger.ErrorLogger.Printf("failed to load startup repository: %s", err.Error())
+	// }
+
 }

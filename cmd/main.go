@@ -29,12 +29,15 @@ func main() {
 	// Initialize and start event listeners
 	go StartEventListeners()
 
+	// Startup load
+	services.LoadStartupRepo()
+
 	// Start the server
 	r.Run(config.Config.ServerAddress)
 }
 
 func StartCommitEventListener() {
-	events.StartEventListener(services.ProcessCommitData)
+	events.StartEventListener(services.ProcessFunc)
 }
 
 // func StartPeriodicFetchListener() {

@@ -3,8 +3,9 @@ package entities
 type EventType string
 
 const (
-	PeriodEvnt  EventType = "period"
+	RepoEvent   EventType = "repo"
 	CommitEvent EventType = "commit"
+	PeriodEvnt  EventType = "period"
 )
 
 type Event struct {
