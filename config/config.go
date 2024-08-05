@@ -9,7 +9,7 @@ import (
 )
 
 type AppConfig struct {
-	ServerAddress    string
+	ServerPort       string
 	DatabaseURL      string
 	DefaultOwner     string
 	DefaultRepo      string
@@ -28,11 +28,11 @@ func LoadConfig() {
 	once.Do(func() {
 		err := godotenv.Load()
 		if err != nil {
-			logger.ErrorLogger.Fatal("Error loading .env file")
+			logger.ErrorLogger.Printf("Error loading .env file")
 		}
 
 		config = &AppConfig{
-			ServerAddress:    os.Getenv("SERVER_ADDRESS"),
+			ServerPort:       os.Getenv("SERVER_PORT"),
 			DatabaseURL:      os.Getenv("DATABASE_URL"),
 			DefaultOwner:     os.Getenv("DEFAULT_OWNER"),
 			DefaultRepo:      os.Getenv("DEFAULT_REPO"),

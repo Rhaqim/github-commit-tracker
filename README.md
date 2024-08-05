@@ -10,6 +10,8 @@ GitHub Commit Tracker is an application designed to fetch and store commit data 
   - [Features](#features)
   - [Prerequisites](#prerequisites)
   - [How to Run GitHub Commit Tracker](#how-to-run-github-commit-tracker)
+    - [Run with Docker Compose](#run-with-docker-compose)
+    - [Run without Docker Compose](#run-without-docker-compose)
   - [Usage](#usage)
     - [Fetching and Storing Commits](#fetching-and-storing-commits)
     - [Top Commit Author](#top-commit-author)
@@ -49,7 +51,6 @@ Before installing GitHub Commit Tracker, ensure that you have the following prer
 - Go 1.22 or higher
 - Docker (Docker Compose)
 - PostgreSQL 15 or higher (optional)
-- Redis 7.0 or higher (optional)
 
 ## How to Run GitHub Commit Tracker
 
@@ -67,6 +68,18 @@ git clone https://github.com/Rhaqim/savannahtech.git
 cd savannahtech
 ```
 
+### Run with Docker Compose
+
+- **Start the application:**
+
+```bash
+docker-compose up -d
+```
+
+This will start the application and the PostgreSQL database in the background. It will run with the default configuration in the .env file.
+
+### Run without Docker Compose
+
 - **Install Dependencies:**
 
 ```bash
@@ -77,27 +90,14 @@ go mod tidy
 
 GitHub Commit Tracker requires the following environment variables to be set:
 
-- `DATABASE`: The name of the PostgreSQL database.
-- `DB_USER`: The username of the PostgreSQL user.
-- `DB_PASSWORD`: The password of the PostgreSQL user.
-- `DB_HOST`: The hostname or IP address of the PostgreSQL server.
-- `DB_PORT`: The port number of the PostgreSQL server.
-- `REDIS_HOST`: The hostname or IP address of the Redis server.
-- `REDIS_PORT`: The port number of the Redis server.
+- `DATABASE_URL`: The connection string for the PostgreSQL database.
+- `SERVER_PORT`: The port on which the application will listen for incoming requests.
 - `DEFAULT_OWNER`: The default owner of the default repository.
 - `DEFAULT_REPO`: The default repository to track on application startup.
 - `DEFAULT_START_DATE`: The default start date for fetching commit data. Should be in the format YYYY-MM-DD:HH:MM:SS e.g 2023-01-01:00:00:00
 - `REFETCH_INTERVAL`: The interval at which the application should get new commit data. Example: 1h, 2d, 30m, etc.
   
-> You can copy the `.env.example` file to `.env` and modify the values accordingly.
-
-- **Run the Docker Compose:**
-
-```bash
-docker-compose up -d
-```
-
-> Note: If you don't have Docker Compose installed, but have PostgreSQL and Redis running locally, you can provide the correct configurations to setup connection to the databases and Redis in the .env file.
+> You can copy the `.env.example` file to `.env` and `modify` the values accordingly.
 
 - **Start the application:**
 

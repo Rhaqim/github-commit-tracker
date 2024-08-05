@@ -71,7 +71,7 @@ It fetches the commit data from the GitHub API and stores it in the database.
 func PeriodicFetch(owner, repo, _ string) error {
 	interval := config.Config.RefetchInterval
 
-	logger.InfoLogger.Printf("Started periodic commit fetching for %s/%s every %s\n", owner, repo, interval)
+	logger.InfoLogger.Printf("Checking new commits for %s/%s every %s\n", owner, repo, interval)
 
 	c := cron.New()
 

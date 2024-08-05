@@ -6,7 +6,7 @@ COPY . .
 
 RUN go mod download
 
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app cmd/main.go
 
 # Stage 2: Create a minimal image to run the application
 FROM alpine:latest

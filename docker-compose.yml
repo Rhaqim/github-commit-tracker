@@ -1,15 +1,21 @@
 name: savannah
 
 services:
-  redis:
-    image: redis:latest
-    container_name: redis
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: savannah
     ports:
-      - 6379:6379
+      - 8080:8080
     volumes:
-      - ./redis-data:/data
-    expose:
-      - 6379
+      - .:/app
+    depends_on:
+      - postgres
+    env_file:
+      - .env.example
+    networks:
+      - savannah
 
   postgres:
     image: postgres:latest
@@ -24,3 +30,9 @@ services:
       - ./postgres-data:/var/lib/postgresql/data
     expose:
       - 5432
+    networks:
+      - savannah
+
+networks:
+  savannah:
+    driver: bridge

@@ -32,7 +32,7 @@ func main() {
 		r := router.SetupRouter()
 
 		// Start the server
-		r.Run(config.Config.ServerAddress)
+		r.Run(config.Config.ServerPort)
 	}()
 
 	// Create a channel to handle OS signals for graceful shutdown
