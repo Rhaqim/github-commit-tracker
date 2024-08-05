@@ -58,11 +58,6 @@ func ProcessCommitData(owner, repo, startDate string) error {
 
 	events.SendEvent(event)
 
-	// err = PeriodicFetch(owner, repo, startDate)
-	// if err != nil {
-	// 	return fmt.Errorf("failed to start periodic commit fetching: %w", err)
-	// }
-
 	return err
 }
 

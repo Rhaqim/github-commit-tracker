@@ -1,17 +1,21 @@
-package services
+package listener
 
 import (
+	"github.com/Rhaqim/savannahtech/internal/api/services"
 	"github.com/Rhaqim/savannahtech/internal/core/entities"
+	"github.com/Rhaqim/savannahtech/internal/utils"
 	"github.com/Rhaqim/savannahtech/pkg/logger"
 )
 
 func ProcessFunc(event entities.Event) error {
-	owner, repo, startDate := event.Owner, event.Repo, event.StartDate
+	owner, repo, startDate_ := event.Owner, event.Repo, event.StartDate
+
+	startDate := utils.ValidateDate(startDate_)
 
 	// Process repository event
 	if event.Type == entities.RepoEvent {
 		go func() {
-			if err := ProcessRepository(owner, repo, startDate); err != nil {
+			if err := services.ProcessRepository(owner, repo, startDate); err != nil {
 				logger.ErrorLogger.Println("Failed to process repository:", err)
 			}
 		}()
@@ -20,7 +24,7 @@ func ProcessFunc(event entities.Event) error {
 	// Process commit event
 	if event.Type == entities.CommitEvent {
 		go func() {
-			if err := ProcessCommitData(owner, repo, startDate); err != nil {
+			if err := services.ProcessCommitData(owner, repo, startDate); err != nil {
 				logger.ErrorLogger.Println("Failed to process commit data:", err)
 			}
 		}()
@@ -29,7 +33,7 @@ func ProcessFunc(event entities.Event) error {
 	// Process periodic fetch event
 	if event.Type == entities.PeriodEvent {
 		go func() {
-			if err := PeriodicFetch(owner, repo, startDate); err != nil {
+			if err := services.PeriodicFetch(owner, repo, startDate); err != nil {
 				logger.ErrorLogger.Println("Failed to process periodic fetch:", err)
 			}
 		}()
@@ -37,13 +41,3 @@ func ProcessFunc(event entities.Event) error {
 
 	return nil
 }
-
-// if event.Type == entities.RepoEvent {
-// 	return ProcessRepository(owner, repo, startDate)
-// }
-// if event.Type == entities.CommitEvent {
-// 	return ProcessCommitData(owner, repo, startDate)
-// }
-// if event.Type == entities.PeriodEvnt {
-// 	return PeriodicFetch(owner, repo, startDate)
-// }

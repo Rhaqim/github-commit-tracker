@@ -1,10 +1,14 @@
 package main
 
 import (
+	"os"
+	"os/signal"
+	"syscall"
+
 	"github.com/Rhaqim/savannahtech/config"
 	"github.com/Rhaqim/savannahtech/internal/api/services"
 	"github.com/Rhaqim/savannahtech/internal/database"
-	"github.com/Rhaqim/savannahtech/internal/events"
+	"github.com/Rhaqim/savannahtech/internal/listener"
 	"github.com/Rhaqim/savannahtech/internal/router"
 	"github.com/Rhaqim/savannahtech/pkg/logger"
 )
@@ -23,30 +27,30 @@ func main() {
 	// Run database migrations
 	database.RunMigrations()
 
-	// Initialize and start event listeners
-	go StartEventListeners()
+	go func() {
+		// Set up the router
+		r := router.SetupRouter()
 
-	// Startup load
+		// Start the server
+		r.Run(config.Config.ServerAddress)
+	}()
+
+	// Create a channel to handle OS signals for graceful shutdown
+	signalChan := make(chan os.Signal, 1)
+	signal.Notify(signalChan, os.Interrupt, syscall.SIGTERM)
+
+	// Initialize and start event listeners
+	// listener.EventListeners()
+	go listener.StartEventListeners()
+
+	// Load default
 	services.LoadStartupRepo()
 
-	// Set up the router
-	r := router.SetupRouter()
+	<-signalChan
+	logger.InfoLogger.Println("Shutting down server and event listener...")
+	// Perform any cleanup here, like closing database connections or gracefully stopping event listeners
+	os.Exit(0)
 
-	// Start the server
-	r.Run(config.Config.ServerAddress)
-
-}
-
-func StartCommitEventListener() {
-	events.StartEventListener(services.ProcessFunc)
-}
-
-// func StartPeriodicFetchListener() {
-// 	startEventListeners(PeriodicFetch)
-// }
-
-func StartEventListeners() {
-	StartCommitEventListener()
 }
 
 /*
