@@ -19,7 +19,7 @@ func GetCommitsByRepository(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"error": "Unable to fetch commits"})
 		return
 	}
-	c.JSON(http.StatusOK, commits)
+	c.JSON(http.StatusOK, gin.H{"data": commits, "message": "Commits fetched"})
 }
 
 func GetTopNCommitAuthors(c *gin.Context) {
@@ -30,5 +30,5 @@ func GetTopNCommitAuthors(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"error": "Unable to fetch top N commit authors"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": commits, "message": "Top N commit authors fetched successfully"})
+	c.JSON(http.StatusOK, gin.H{"data": commits, "message": "Top N commit authors fetched"})
 }
