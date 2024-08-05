@@ -19,6 +19,8 @@ import (
 func FetchCommitsByRepository(repoName, pageStr, sizeStr string) ([]entities.Commit, error) {
 	size, offset := utils.Paigenation(pageStr, sizeStr)
 
+	logger.InfoLogger.Printf("Fetching commits for %s\n", repoName)
+
 	return repositories.CommitStore.GetCommitsByRepository(repoName, size, offset)
 }
 

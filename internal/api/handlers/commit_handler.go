@@ -16,7 +16,7 @@ func GetCommitsByRepository(c *gin.Context) {
 
 	commits, err := services.FetchCommitsByRepository(repoName, pageStr, sizeStr)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to fetch commits"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to fetch commits" + err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, commits)

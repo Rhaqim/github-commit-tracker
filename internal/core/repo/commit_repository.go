@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Rhaqim/savannahtech/internal/core/entities"
+	"github.com/Rhaqim/savannahtech/pkg/logger"
 	"gorm.io/gorm"
 )
 
@@ -24,8 +25,11 @@ func (c *CommitRepo) CreateCommits(commit []entities.Commit) error {
 
 func (c *CommitRepo) GetCommitsByRepository(repoName string, limit, offset int) ([]entities.Commit, error) {
 	var commits []entities.Commit
-	if err := c.db.Joins("JOIN repository_stores ON repository_stores.owner_repository = commit_stores.owner_repository").
-		Where("repository_stores.name = ?", repoName).
+
+	logger.InfoLogger.Printf("Fetching commits for repository %s\n", repoName)
+
+	if err := c.db.Joins("JOIN repositories ON repositories.owner_repository = commits.owner_repository").
+		Where("repositories.name = ?", repoName).
 		Limit(limit).
 		Offset(offset).
 		Find(&commits).Error; err != nil {

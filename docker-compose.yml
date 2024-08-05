@@ -8,18 +8,17 @@ services:
     container_name: savannah
     ports:
       - 8080:8080
-    volumes:
-      - .:/app
     depends_on:
-      - postgres
+      - db
     env_file:
       - .env.example
     networks:
       - savannah
+    restart: always
 
-  postgres:
+  db:
     image: postgres:latest
-    container_name: postgres
+    container_name: db
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
