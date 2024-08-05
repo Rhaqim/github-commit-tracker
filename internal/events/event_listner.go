@@ -1,7 +1,6 @@
 package events
 
 import (
-	"github.com/Rhaqim/savannahtech/internal/api/services"
 	"github.com/Rhaqim/savannahtech/internal/core/entities"
 	"github.com/Rhaqim/savannahtech/pkg/logger"
 )
@@ -39,7 +38,7 @@ func SendEvent(event entities.Event) {
 }
 
 func StartCommitEventListener() {
-	startEventListeners(services.ProcessCommitData)
+	// startEventListeners(services.ProcessCommitData)
 }
 
 // func StartPeriodicFetchListener() {
@@ -47,6 +46,5 @@ func StartCommitEventListener() {
 // }
 
 func StartEventListeners() {
-	StartCommitEventListener()
 	// StartPeriodicFetchListener()
 }

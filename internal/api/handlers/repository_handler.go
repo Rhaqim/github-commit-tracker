@@ -11,7 +11,10 @@ import (
 func ProcessRepository(c *gin.Context) {
 	owner := c.Param("owner")
 	repo := c.Param("repo")
-	err := services.ProcessRepository(owner, repo)
+
+	startDate := c.Query("start_date")
+
+	err := services.ProcessRepository(owner, repo, startDate)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to process repository"})
 		return
