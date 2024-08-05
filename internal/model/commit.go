@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"savannahtech/internal/database"
-	"savannahtech/internal/types"
+	"github.com/Rhaqim/savannahtech/internal/database"
+	"github.com/Rhaqim/savannahtech/internal/types"
 
 	"gorm.io/gorm"
 )

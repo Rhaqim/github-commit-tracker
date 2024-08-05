@@ -1,7 +1,7 @@
 package config
 
 import (
-	ut "savannahtech/internal/utils"
+	ut "github.com/Rhaqim/savannahtech/internal/utils"
 )
 
 // Github

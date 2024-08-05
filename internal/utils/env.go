@@ -3,7 +3,7 @@ package utils
 import (
 	"os"
 
-	"savannahtech/internal/log"
+	"github.com/Rhaqim/savannahtech/internal/log"
 
 	"github.com/joho/godotenv"
 )

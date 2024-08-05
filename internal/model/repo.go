@@ -3,7 +3,7 @@ package model
 import (
 	"fmt"
 
-	"savannahtech/internal/database"
+	"github.com/Rhaqim/savannahtech/internal/database"
 
 	"gorm.io/gorm"
 )

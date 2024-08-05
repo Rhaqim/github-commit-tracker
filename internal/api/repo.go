@@ -3,8 +3,8 @@ package api
 import (
 	"strings"
 
-	"savannahtech/internal/core"
-	"savannahtech/internal/model"
+	"github.com/Rhaqim/savannahtech/internal/core"
+	"github.com/Rhaqim/savannahtech/internal/model"
 
 	"github.com/gin-gonic/gin"
 )

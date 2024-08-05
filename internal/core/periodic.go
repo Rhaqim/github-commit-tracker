@@ -3,11 +3,11 @@ package core
 import (
 	"strconv"
 
-	"savannahtech/internal/config"
-	"savannahtech/internal/log"
-	"savannahtech/internal/model"
-	"savannahtech/internal/types"
-	"savannahtech/internal/utils"
+	"github.com/Rhaqim/savannahtech/internal/config"
+	"github.com/Rhaqim/savannahtech/internal/log"
+	"github.com/Rhaqim/savannahtech/internal/model"
+	"github.com/Rhaqim/savannahtech/internal/types"
+	"github.com/Rhaqim/savannahtech/internal/utils"
 
 	"github.com/robfig/cron/v3"
 )

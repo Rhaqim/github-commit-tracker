@@ -1,8 +1,9 @@
 package test
 
 import (
-	"savannahtech/internal/utils"
 	"testing"
+
+	"github.com/Rhaqim/savannahtech/internal/utils"
 )
 
 func TestValidateDate(t *testing.T) {

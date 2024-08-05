@@ -5,11 +5,11 @@ import (
 	"os/signal"
 	"syscall"
 
-	"savannahtech/internal/core"
-	"savannahtech/internal/database"
-	"savannahtech/internal/log"
-	"savannahtech/internal/model"
-	"savannahtech/internal/router"
+	"github.com/Rhaqim/savannahtech/internal/core"
+	"github.com/Rhaqim/savannahtech/internal/database"
+	"github.com/Rhaqim/savannahtech/internal/log"
+	"github.com/Rhaqim/savannahtech/internal/model"
+	"github.com/Rhaqim/savannahtech/internal/router"
 )
 
 func main() {
@@ -17,8 +17,8 @@ func main() {
 	log.Init(true)
 
 	// Initialize the database
-	database.Init()
-	defer database.Close()
+	// database.Init()
+	// defer database.Close()
 
 	// Run database migrations
 	err := model.Migrations()

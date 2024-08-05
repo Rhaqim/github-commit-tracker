@@ -5,12 +5,12 @@ import (
 	"strconv"
 	"sync"
 
-	"savannahtech/internal/config"
-	"savannahtech/internal/event"
-	"savannahtech/internal/log"
-	"savannahtech/internal/model"
-	"savannahtech/internal/types"
-	"savannahtech/internal/utils"
+	"github.com/Rhaqim/savannahtech/internal/config"
+	"github.com/Rhaqim/savannahtech/internal/event"
+	"github.com/Rhaqim/savannahtech/internal/log"
+	"github.com/Rhaqim/savannahtech/internal/model"
+	"github.com/Rhaqim/savannahtech/internal/types"
+	"github.com/Rhaqim/savannahtech/internal/utils"
 
 	"github.com/google/uuid"
 )

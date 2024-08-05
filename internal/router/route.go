@@ -1,7 +1,7 @@
 package router
 
 import (
-	"savannahtech/internal/api"
+	"github.com/Rhaqim/savannahtech/internal/api"
 
 	"github.com/gin-gonic/gin"
 )

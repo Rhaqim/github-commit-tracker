@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"savannahtech/internal/log"
-	"savannahtech/internal/types"
+	"github.com/Rhaqim/savannahtech/internal/log"
+	"github.com/Rhaqim/savannahtech/internal/types"
 )
 
 /*

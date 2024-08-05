@@ -1,8 +1,8 @@
 package database
 
 import (
-	"savannahtech/internal/config"
-	"savannahtech/internal/log"
+	"github.com/Rhaqim/savannahtech/internal/config"
+	"github.com/Rhaqim/savannahtech/internal/log"
 
 	"github.com/redis/go-redis/v9"
 )

@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"savannahtech/internal/log"
-	"savannahtech/internal/types"
-	"savannahtech/internal/utils"
+	"github.com/Rhaqim/savannahtech/internal/log"
+	"github.com/Rhaqim/savannahtech/internal/types"
+	"github.com/Rhaqim/savannahtech/internal/utils"
 )
 
 func TestExponentialBackoff(t *testing.T) {

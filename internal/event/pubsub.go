@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/json"
 
-	"savannahtech/internal/database"
-	"savannahtech/internal/log"
-	"savannahtech/internal/types"
+	"github.com/Rhaqim/savannahtech/internal/database"
+	"github.com/Rhaqim/savannahtech/internal/log"
+	"github.com/Rhaqim/savannahtech/internal/types"
 
 	"github.com/google/uuid"
 )

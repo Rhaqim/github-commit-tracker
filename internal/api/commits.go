@@ -4,8 +4,8 @@ import (
 	"strconv"
 	"strings"
 
-	"savannahtech/internal/model"
-	"savannahtech/internal/utils"
+	"github.com/Rhaqim/savannahtech/internal/model"
+	"github.com/Rhaqim/savannahtech/internal/utils"
 
 	"github.com/gin-gonic/gin"
 )

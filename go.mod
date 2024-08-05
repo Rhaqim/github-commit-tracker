@@ -1,4 +1,4 @@
-module savannahtech
+module "github.com/Rhaqim/savannahtech"
 
 go 1.22.0
 
