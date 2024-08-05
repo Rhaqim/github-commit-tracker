@@ -43,7 +43,3 @@ func LoadConfig() {
 
 	Config = config
 }
-
-// func Config() *AppConfig {
-// 	return config
-// }

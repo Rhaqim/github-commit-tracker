@@ -4,12 +4,11 @@ import (
 	"fmt"
 
 	"github.com/Rhaqim/savannahtech/internal/api/github"
-	"github.com/Rhaqim/savannahtech/internal/api/github/types"
 	"github.com/Rhaqim/savannahtech/internal/core/entities"
 	"github.com/Rhaqim/savannahtech/internal/core/repositories"
+	"github.com/Rhaqim/savannahtech/internal/core/types"
 	"github.com/Rhaqim/savannahtech/internal/events"
 	"github.com/Rhaqim/savannahtech/pkg/logger"
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -39,24 +38,7 @@ func ProcessRepository(owner, repo, startDate string) error {
 		return err
 	}
 
-	return handleExistingRepository(repo_, owner, repo)
-}
-
-func convertRepositoryType(repo_ types.Repository, ownerRepo string) entities.Repository {
-	var repo entities.Repository = entities.Repository{
-		Name:            repo_.Name,
-		Description:     repo_.Description,
-		URL:             repo_.URL,
-		Language:        repo_.Language,
-		StargazersCount: repo_.StargazersCount,
-		WatchersCount:   repo_.WatchersCount,
-		ForksCount:      repo_.ForksCount,
-		RepoCreatedAt:   repo_.CreatedAt,
-		RepoUpdatedAt:   repo_.UpdatedAt,
-		OwnerRepository: ownerRepo,
-	}
-
-	return repo
+	return handleExistingRepository(repo_, owner, repo, startDate)
 }
 
 func handleNewRepository(url, owner, repo, startDate string) error {
@@ -77,12 +59,10 @@ func handleNewRepository(url, owner, repo, startDate string) error {
 	logger.InfoLogger.Printf("Successfully accessed repository %s/%s\n", owner, repo)
 
 	event := entities.Event{
-		ID:      uuid.New().String(),
-		From:    startDate,
-		Message: "New repository event",
-		Type:    entities.NewRepo,
-		Owner:   owner,
-		Repo:    repo,
+		StartDate: startDate,
+		Type:      entities.CommitEvent,
+		Owner:     owner,
+		Repo:      repo,
 	}
 
 	events.SendEvent(event)
@@ -90,20 +70,18 @@ func handleNewRepository(url, owner, repo, startDate string) error {
 	return nil
 }
 
-func handleExistingRepository(repo_ entities.Repository, owner, repo string) error {
-	logger.InfoLogger.Println("Handling existing repository for")
+func handleExistingRepository(repo_ entities.Repository, owner, repo, startDate string) error {
+	logger.InfoLogger.Printf("Handling existing repository %s/%s\n", owner, repo)
 
 	if repo_.Indexed {
 		logger.InfoLogger.Println("Repository already indexed, sending commit data")
 
 		// Publish commit event for periodic fetching of commits
 		event := entities.Event{
-			ID:      uuid.New().String(),
-			From:    "",
-			Message: "Commit data fetched",
-			Type:    entities.CommitEvent,
-			Owner:   "",
-			Repo:    "",
+			StartDate: startDate,
+			Type:      entities.PeriodEvnt,
+			Owner:     owner,
+			Repo:      repo,
 		}
 
 		events.SendEvent(event)
@@ -113,15 +91,30 @@ func handleExistingRepository(repo_ entities.Repository, owner, repo string) err
 
 	// Publish new repository event if not indexed
 	event := entities.Event{
-		ID:      uuid.New().String(),
-		From:    "startDate",
-		Message: "New repository event",
-		Type:    entities.NewRepo,
-		Owner:   owner,
-		Repo:    repo,
+		StartDate: startDate,
+		Type:      entities.CommitEvent,
+		Owner:     owner,
+		Repo:      repo,
 	}
 
 	events.SendEvent(event)
 
 	return nil
+}
+
+func convertRepositoryType(repo_ types.Repository, ownerRepo string) entities.Repository {
+	var repo entities.Repository = entities.Repository{
+		Name:            repo_.Name,
+		Description:     repo_.Description,
+		URL:             repo_.URL,
+		Language:        repo_.Language,
+		StargazersCount: repo_.StargazersCount,
+		WatchersCount:   repo_.WatchersCount,
+		ForksCount:      repo_.ForksCount,
+		RepoCreatedAt:   repo_.CreatedAt,
+		RepoUpdatedAt:   repo_.UpdatedAt,
+		OwnerRepository: ownerRepo,
+	}
+
+	return repo
 }

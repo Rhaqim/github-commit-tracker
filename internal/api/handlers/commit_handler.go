@@ -23,7 +23,8 @@ func GetCommitsByRepository(c *gin.Context) {
 }
 
 func GetTopNCommitAuthors(c *gin.Context) {
-	n := c.Param("n")
+	n := c.Query("n")
+
 	commits, err := services.FetchTopNCommitAuthors(n)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to fetch top N commit authors"})

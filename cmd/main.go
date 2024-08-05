@@ -2,8 +2,10 @@ package main
 
 import (
 	"github.com/Rhaqim/savannahtech/config"
+	"github.com/Rhaqim/savannahtech/internal/api/services"
 	"github.com/Rhaqim/savannahtech/internal/database"
 	"github.com/Rhaqim/savannahtech/internal/events"
+	"github.com/Rhaqim/savannahtech/internal/router"
 	"github.com/Rhaqim/savannahtech/pkg/logger"
 )
 
@@ -22,13 +24,25 @@ func main() {
 	database.RunMigrations()
 
 	// Set up the router
-	r := config.SetupRouter()
+	r := router.SetupRouter()
 
 	// Initialize and start event listeners
-	go events.StartEventListeners()
+	go StartEventListeners()
 
 	// Start the server
 	r.Run(config.Config.ServerAddress)
+}
+
+func StartCommitEventListener() {
+	events.StartEventListener(services.ProcessCommitData)
+}
+
+// func StartPeriodicFetchListener() {
+// 	startEventListeners(PeriodicFetch)
+// }
+
+func StartEventListeners() {
+	StartCommitEventListener()
 }
 
 /*

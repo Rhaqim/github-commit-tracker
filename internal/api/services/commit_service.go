@@ -5,12 +5,14 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/Rhaqim/savannahtech/config"
 	"github.com/Rhaqim/savannahtech/internal/api/github"
-	"github.com/Rhaqim/savannahtech/internal/api/github/types"
 	"github.com/Rhaqim/savannahtech/internal/core/entities"
 	"github.com/Rhaqim/savannahtech/internal/core/repositories"
+	"github.com/Rhaqim/savannahtech/internal/core/types"
 	"github.com/Rhaqim/savannahtech/internal/utils"
 	"github.com/Rhaqim/savannahtech/pkg/logger"
+	"github.com/robfig/cron/v3"
 )
 
 func FetchCommitsByRepository(repoName, pageStr, sizeStr string) ([]entities.Commit, error) {
@@ -28,35 +30,26 @@ func FetchTopNCommitAuthors(n string) ([]entities.CommitCount, error) {
 	return repositories.CommitStore.GetTopNCommitAuthors(nInt)
 }
 
-func ProcessCommitData(owner, repo, start_date string) error {
+func ProcessCommitData(event_ entities.Event) error {
 	var err error
+
+	if event_.Type != entities.CommitEvent {
+		return nil
+	}
+
+	var owner, repo, start_date string = event_.Owner, event_.Repo, event_.StartDate
 
 	ownerRepo := fmt.Sprintf("%s/%s", owner, repo)
 
-	url := "https://api.github.com/repos/" + ownerRepo + "/commits"
+	url := fmt.Sprintf("https://api.github.com/repos/%s/commits", ownerRepo)
 
 	if start_date != "" {
 		url += "?since=" + start_date
 	}
 
-	commitsChan := make(chan []types.Commit)
-
-	go func() {
-		err := github.FetchCommits(url, commitsChan)
-		if err != nil {
-			logger.ErrorLogger.Printf("Failed to fetch commits: %v", err)
-		}
-		close(commitsChan)
-	}()
-
-	for commit := range commitsChan {
-		logger.InfoLogger.Println("Received commits: " + strconv.Itoa(len(commit)) + " for " + ownerRepo)
-
-		commits := convertCommitType(commit, ownerRepo)
-
-		if err := repositories.CommitStore.CreateCommits(commits); err != nil {
-			return fmt.Errorf("failed to store commits: %w", err)
-		}
+	err = processCommit(url, ownerRepo)
+	if err != nil {
+		return fmt.Errorf("failed to process commit data: %w", err)
 	}
 
 	// send event to the event queue using go channel
@@ -88,4 +81,70 @@ func convertCommitType(commits []types.Commit, ownerRepo string) []entities.Comm
 
 	return commitStores
 
+}
+
+/*
+PeriodicFetch periodically fetches commit data for a repository.
+
+It uses a cron job to fetch commit data at a specified interval.
+
+It fetches the commit data from the GitHub API and stores it in the database.
+*/
+func PeriodicFetch(owner, repo, _ string) error {
+	interval := config.Config.RefetchInterval
+
+	logger.InfoLogger.Printf("Started periodic commit fetching for %s/%s every %s\n", owner, repo, interval)
+
+	c := cron.New()
+
+	ownerRepo := owner + "/" + repo
+
+	// Construct the base URL for fetching commits
+	baseURL := fmt.Sprintf("https://api.github.com//repos/%s/commits", ownerRepo)
+
+	c.AddFunc(fmt.Sprintf("@every %s", interval), func() {
+		// Get the last commit SHA stored
+		lastCommitDate := repositories.CommitStore.GetLastCommitDate(ownerRepo)
+
+		// Construct the URL with the last commit date to fetch new commits
+		url := fmt.Sprintf("%s?since=%s", baseURL, lastCommitDate)
+
+		if lastCommitDate == "" {
+			url = baseURL
+		}
+
+		err := processCommit(url, ownerRepo)
+		if err != nil {
+			logger.ErrorLogger.Printf("Failed to process commit data: %v", err)
+			return
+		}
+
+	})
+	c.Start()
+
+	return nil
+}
+
+func processCommit(url, ownerRepo string) error {
+	commitsChan := make(chan []types.Commit)
+
+	go func() {
+		err := github.FetchCommits(url, commitsChan)
+		if err != nil {
+			logger.ErrorLogger.Printf("Failed to fetch commits: %v", err)
+		}
+		close(commitsChan)
+	}()
+
+	for commit := range commitsChan {
+		logger.InfoLogger.Println("Received commits: " + strconv.Itoa(len(commit)) + " for " + ownerRepo)
+
+		commits := convertCommitType(commit, ownerRepo)
+
+		if err := repositories.CommitStore.CreateCommits(commits); err != nil {
+			return fmt.Errorf("failed to store commits: %w", err)
+		}
+	}
+
+	return nil
 }

@@ -38,7 +38,7 @@ func (c *CommitRepo) GetTopNCommitAuthors(n int) ([]entities.CommitCount, error)
 	var results []entities.CommitCount
 
 	// Perform the query
-	if err := c.db.Model(c).
+	if err := c.db.Model(entities.Commit{}).
 		Select("author, COUNT(*) as commit_count").
 		Group("author").
 		Order("commit_count DESC").
@@ -48,4 +48,12 @@ func (c *CommitRepo) GetTopNCommitAuthors(n int) ([]entities.CommitCount, error)
 	}
 
 	return results, nil
+}
+
+func (c *CommitRepo) GetLastCommitDate(ownerRepo string) string {
+	var commit entities.Commit
+	if err := c.db.Where("owner_repository = ?", ownerRepo).Order("date desc").First(&commit).Error; err != nil {
+		return ""
+	}
+	return commit.Date.Format("2006-01-02T15:04:05Z")
 }

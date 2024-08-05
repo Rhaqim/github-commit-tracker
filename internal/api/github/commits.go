@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/Rhaqim/savannahtech/internal/api/github/types"
 	"github.com/Rhaqim/savannahtech/internal/core/entities"
+	"github.com/Rhaqim/savannahtech/internal/core/types"
 	"github.com/Rhaqim/savannahtech/old/utils"
 )
 

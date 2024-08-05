@@ -3,16 +3,13 @@ package entities
 type EventType string
 
 const (
-	NewRepo     EventType = "new-repo"
+	PeriodEvnt  EventType = "Period"
 	CommitEvent EventType = "commit"
-	RepoEvent   EventType = "repo"
 )
 
 type Event struct {
-	ID      string    `json:"id"`
-	From    string    `json:"from"`
-	Message string    `json:"message"`
-	Type    EventType `json:"type"`
-	Owner   string    `json:"owner"`
-	Repo    string    `json:"repo"`
+	Owner     string    `json:"owner"`
+	Repo      string    `json:"repo"`
+	StartDate string    `json:"startDate"`
+	Type      EventType `json:"type"`
 }

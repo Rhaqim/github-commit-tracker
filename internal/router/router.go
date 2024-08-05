@@ -1,4 +1,4 @@
-package config
+package router
 
 import (
 	"github.com/Rhaqim/savannahtech/internal/api/handlers"

@@ -10,12 +10,12 @@ var (
 	ErrorChan = make(chan error, 1)
 )
 
-func startEventListeners(processFunc func(owner, repo, start_date string) error) {
+func StartEventListener(processFunc func(event entities.Event) error) {
 	go func() {
 		for event := range EventChan {
 			logger.InfoLogger.Printf("Event received: %v", event)
 
-			if err := processFunc(event.Owner, event.Repo, event.From); err != nil {
+			if err := processFunc(event); err != nil {
 				ErrorChan <- err
 			}
 		}
@@ -35,16 +35,4 @@ func startEventListeners(processFunc func(owner, repo, start_date string) error)
 
 func SendEvent(event entities.Event) {
 	EventChan <- event
-}
-
-func StartCommitEventListener() {
-	// startEventListeners(services.ProcessCommitData)
-}
-
-// func StartPeriodicFetchListener() {
-// 	startEventListeners(PeriodicFetch)
-// }
-
-func StartEventListeners() {
-	// StartPeriodicFetchListener()
 }
