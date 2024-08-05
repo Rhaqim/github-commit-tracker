@@ -24,7 +24,7 @@ func TestInit(t *testing.T) {
 	logToFileAndTerminal := true
 
 	// Call the Init function
-	Init(logToFileAndTerminal)
+	InitLogger(logToFileAndTerminal)
 
 	// Check if the log files are created in the correct directory
 	infoLogPath := filepath.Join(logDir, "info.log")

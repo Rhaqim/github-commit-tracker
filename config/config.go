@@ -1,10 +1,10 @@
 package config
 
 import (
-	"log"
 	"os"
 	"sync"
 
+	"github.com/Rhaqim/savannahtech/pkg/logger"
 	"github.com/joho/godotenv"
 )
 
@@ -22,11 +22,13 @@ var (
 	once   sync.Once
 )
 
+var Config *AppConfig
+
 func LoadConfig() {
 	once.Do(func() {
 		err := godotenv.Load()
 		if err != nil {
-			log.Fatal("Error loading .env file")
+			logger.ErrorLogger.Fatal("Error loading .env file")
 		}
 
 		config = &AppConfig{
@@ -38,8 +40,10 @@ func LoadConfig() {
 			RefetchInterval:  os.Getenv("REFETCH_INTERVAL"),
 		}
 	})
+
+	Config = config
 }
 
-func Config() *AppConfig {
-	return config
-}
+// func Config() *AppConfig {
+// 	return config
+// }

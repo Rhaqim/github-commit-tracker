@@ -2,15 +2,15 @@ package config
 
 import (
 	"github.com/Rhaqim/savannahtech/internal/api/handlers"
-	// "github.com/Rhaqim/savannahtech/internal/api/middleware"
+	"github.com/Rhaqim/savannahtech/internal/api/middleware"
 	"github.com/gin-gonic/gin"
 )
 
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
 
-	// r.Use(middleware.RequestLogger())
-	// r.Use(middleware.RecoveryMiddleware())
+	r.Use(middleware.RequestLogger())
+	r.Use(middleware.RecoveryMiddleware())
 
 	// // Define routes
 	repoGroup := r.Group("/repositories")

@@ -18,7 +18,7 @@ Init initializes the logger with the given logToFileAndTerminal flag.
 If logToFileAndTerminal is true, the logger will log to both the terminal and a file.
 If logToFileAndTerminal is false, the logger will only log to the file.
 */
-func Init(logToFileAndTerminal bool) {
+func InitLogger(logToFileAndTerminal bool) {
 	if InfoLogger != nil && ErrorLogger != nil {
 		// Logger already initialized
 		return

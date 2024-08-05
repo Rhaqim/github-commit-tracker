@@ -13,7 +13,7 @@ func NewRepositoryRepo(db *gorm.DB) *RepositoryRepo {
 	return &RepositoryRepo{db: db}
 }
 
-func (r *RepositoryRepo) ProcessRepository(repo entities.Repository) error {
+func (r *RepositoryRepo) StoreRepository(repo entities.Repository) error {
 	if err := r.db.Create(&repo).Error; err != nil {
 		return err
 	}
