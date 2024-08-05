@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/Rhaqim/savannahtech/internal/core/types"
-	"github.com/Rhaqim/savannahtech/old/utils"
+	"github.com/Rhaqim/savannahtech/internal/utils"
 )
 
 func FetchCommits(url string, commitsChan chan<- []types.Commit) error {

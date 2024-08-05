@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/Rhaqim/savannahtech/internal/core/types"
-	"github.com/Rhaqim/savannahtech/old/utils"
 	"github.com/Rhaqim/savannahtech/pkg/logger"
 )
 
@@ -92,7 +91,7 @@ func TestFetchRepository(t *testing.T) {
 	defer server.Close()
 
 	url := server.URL
-	repo, err := utils.FetchRepository(url)
+	repo, err := FetchRepository(url)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
