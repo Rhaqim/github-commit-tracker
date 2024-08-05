@@ -1,6 +1,8 @@
 package listener
 
 import (
+	"strings"
+
 	"github.com/Rhaqim/savannahtech/internal/api/services"
 	"github.com/Rhaqim/savannahtech/internal/core/entities"
 	"github.com/Rhaqim/savannahtech/internal/utils"
@@ -8,7 +10,9 @@ import (
 )
 
 func ProcessFunc(event entities.Event) error {
-	owner, repo, startDate_ := event.Owner, event.Repo, event.StartDate
+	owner_, repo_, startDate_ := event.Owner, event.Repo, event.StartDate
+
+	owner, repo := strings.ToLower(owner_), strings.ToLower(repo_)
 
 	startDate := utils.ValidateDate(startDate_)
 
@@ -33,7 +37,7 @@ func ProcessFunc(event entities.Event) error {
 	// Process periodic fetch event
 	if event.Type == entities.PeriodEvent {
 		go func() {
-			if err := services.PeriodicFetch(owner, repo, startDate); err != nil {
+			if err := services.PeriodicFetch(owner, repo); err != nil {
 				logger.ErrorLogger.Println("Failed to process periodic fetch:", err)
 			}
 		}()

@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/Rhaqim/savannahtech/config"
@@ -14,7 +15,8 @@ import (
 	"gorm.io/gorm"
 )
 
-func FetchRepositoryByOwnerRepo(ownerRepo string) (entities.Repository, error) {
+func FetchRepositoryByOwnerRepo(owner, repo string) (entities.Repository, error) {
+	ownerRepo := strings.ToLower(fmt.Sprintf("%s/%s", owner, repo))
 	return repositories.RepoStore.GetRepositoryByOwnerRepo(ownerRepo)
 }
 
@@ -27,12 +29,10 @@ It also publishes an event to the event queue indicating that the repository dat
 */
 func ProcessRepository(owner, repo, startDate string) error {
 
-	ownerRepo := fmt.Sprintf("%s/%s", owner, repo)
-
-	url := fmt.Sprintf("https://api.github.com/repos/%s", ownerRepo)
+	url := fmt.Sprintf("https://api.github.com/repos/%s/%s", owner, repo)
 
 	// Check if the repository exists in the store
-	repo_, err := FetchRepositoryByOwnerRepo(ownerRepo)
+	repo_, err := FetchRepositoryByOwnerRepo(owner, repo)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return handleNewRepository(url, owner, repo, startDate)

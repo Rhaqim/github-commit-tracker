@@ -4,7 +4,8 @@ import (
 	"net/http"
 
 	"github.com/Rhaqim/savannahtech/internal/api/services"
-	"github.com/Rhaqim/savannahtech/pkg/logger"
+	"github.com/Rhaqim/savannahtech/internal/core/entities"
+	"github.com/Rhaqim/savannahtech/internal/events"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,38 +16,26 @@ func ProcessRepository(c *gin.Context) {
 
 	startDate := c.Query("start_date")
 
-	// err := services.ProcessRepository(owner, repo, startDate)
-	// if err != nil {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to process repository"})
-	// 	return
-	// }
+	event := entities.Event{
+		Owner:     owner,
+		Repo:      repo,
+		StartDate: startDate,
+		Type:      entities.RepoEvent,
+	}
 
-	// Send the event to the channel asynchronously
-	go func() {
-		err := services.ProcessRepository(owner, repo, startDate)
-		if err != nil {
-			logger.ErrorLogger.Println("Failed to process repository:", err)
-		}
-	}()
+	events.SendEvent(event)
 
-	// event := entities.Event{
-	// 	Owner:     owner,
-	// 	Repo:      repo,
-	// 	StartDate: startDate,
-	// 	Type:      entities.RepoEvent,
-	// }
-
-	// events.SendEvent(event)
-
-	c.JSON(http.StatusOK, gin.H{"message": "Repository processed"})
+	c.JSON(http.StatusOK, gin.H{"message": "Repository processing initiated"})
 }
 
 func GetRepositoryByOwnerRepo(c *gin.Context) {
-	ownerRepo := c.Param("owner_repo")
-	repo, err := services.FetchRepositoryByOwnerRepo(ownerRepo)
+	owner := c.Param("owner")
+	repo := c.Param("repo")
+
+	repo_, err := services.FetchRepositoryByOwnerRepo(owner, repo)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to fetch repository"})
+		c.JSON(http.StatusOK, gin.H{"error": "Unable to fetch repository"})
 		return
 	}
-	c.JSON(http.StatusOK, repo)
+	c.JSON(http.StatusOK, gin.H{"data": repo_, "message": "Repository fetched successfully"})
 }

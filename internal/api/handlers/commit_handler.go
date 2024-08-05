@@ -16,7 +16,7 @@ func GetCommitsByRepository(c *gin.Context) {
 
 	commits, err := services.FetchCommitsByRepository(repoName, pageStr, sizeStr)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to fetch commits" + err.Error()})
+		c.JSON(http.StatusOK, gin.H{"error": "Unable to fetch commits"})
 		return
 	}
 	c.JSON(http.StatusOK, commits)
@@ -27,8 +27,8 @@ func GetTopNCommitAuthors(c *gin.Context) {
 
 	commits, err := services.FetchTopNCommitAuthors(n)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to fetch top N commit authors"})
+		c.JSON(http.StatusOK, gin.H{"error": "Unable to fetch top N commit authors"})
 		return
 	}
-	c.JSON(http.StatusOK, commits)
+	c.JSON(http.StatusOK, gin.H{"data": commits, "message": "Top N commit authors fetched successfully"})
 }
