@@ -13,6 +13,6 @@ type Repository struct {
 	WatchersCount   int    `json:"watchers_count,omitempty"`
 	RepoCreatedAt   string `json:"repo_created_at,omitempty"`
 	RepoUpdatedAt   string `json:"repo_updated_at,omitempty"`
-	OwnerRepository string `json:"owner_repository,omitempty" gorm:"unique"`
+	OwnerRepository string `json:"owner_repository,omitempty" gorm:"index;unique"`
 	Indexed         bool   `json:"indexed" default:"false"`
 }

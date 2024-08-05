@@ -23,17 +23,18 @@ func main() {
 	// Run database migrations
 	database.RunMigrations()
 
-	// Set up the router
-	r := router.SetupRouter()
-
 	// Initialize and start event listeners
 	go StartEventListeners()
 
 	// Startup load
 	services.LoadStartupRepo()
 
+	// Set up the router
+	r := router.SetupRouter()
+
 	// Start the server
 	r.Run(config.Config.ServerAddress)
+
 }
 
 func StartCommitEventListener() {

@@ -5,7 +5,7 @@ type EventType string
 const (
 	RepoEvent   EventType = "repo"
 	CommitEvent EventType = "commit"
-	PeriodEvnt  EventType = "period"
+	PeriodEvent EventType = "period"
 )
 
 type Event struct {

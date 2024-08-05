@@ -81,7 +81,7 @@ func handleExistingRepository(repo_ entities.Repository, owner, repo, startDate 
 		// Publish commit event for periodic fetching of commits
 		event := entities.Event{
 			StartDate: startDate,
-			Type:      entities.PeriodEvnt,
+			Type:      entities.PeriodEvent,
 			Owner:     owner,
 			Repo:      repo,
 		}
@@ -139,10 +139,5 @@ func LoadStartupRepo() {
 	}
 
 	events.SendEvent(event)
-
-	// err := ProcessRepository(owner, repo, startDate)
-	// if err != nil {
-	// 	logger.ErrorLogger.Printf("failed to load startup repository: %s", err.Error())
-	// }
 
 }

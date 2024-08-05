@@ -6,8 +6,9 @@ import (
 )
 
 func ProcessFunc(event entities.Event) error {
-	var owner, repo, startDate string = event.Owner, event.Repo, event.StartDate
+	owner, repo, startDate := event.Owner, event.Repo, event.StartDate
 
+	// Process repository event
 	if event.Type == entities.RepoEvent {
 		go func() {
 			if err := ProcessRepository(owner, repo, startDate); err != nil {
@@ -15,6 +16,8 @@ func ProcessFunc(event entities.Event) error {
 			}
 		}()
 	}
+
+	// Process commit event
 	if event.Type == entities.CommitEvent {
 		go func() {
 			if err := ProcessCommitData(owner, repo, startDate); err != nil {
@@ -23,24 +26,24 @@ func ProcessFunc(event entities.Event) error {
 		}()
 	}
 
-	if event.Type == entities.PeriodEvnt {
+	// Process periodic fetch event
+	if event.Type == entities.PeriodEvent {
 		go func() {
 			if err := PeriodicFetch(owner, repo, startDate); err != nil {
 				logger.ErrorLogger.Println("Failed to process periodic fetch:", err)
 			}
-
 		}()
 	}
 
-	// if event.Type == entities.RepoEvent {
-	// 	return ProcessRepository(owner, repo, startDate)
-	// }
-	// if event.Type == entities.CommitEvent {
-	// 	return ProcessCommitData(owner, repo, startDate)
-	// }
-	// if event.Type == entities.PeriodEvnt {
-	// 	return PeriodicFetch(owner, repo, startDate)
-	// }
-
 	return nil
 }
+
+// if event.Type == entities.RepoEvent {
+// 	return ProcessRepository(owner, repo, startDate)
+// }
+// if event.Type == entities.CommitEvent {
+// 	return ProcessCommitData(owner, repo, startDate)
+// }
+// if event.Type == entities.PeriodEvnt {
+// 	return PeriodicFetch(owner, repo, startDate)
+// }

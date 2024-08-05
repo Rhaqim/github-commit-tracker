@@ -51,7 +51,7 @@ func ProcessCommitData(owner, repo, startDate string) error {
 
 	event := entities.Event{
 		StartDate: startDate,
-		Type:      entities.PeriodEvnt,
+		Type:      entities.PeriodEvent,
 		Owner:     owner,
 		Repo:      repo,
 	}
@@ -80,7 +80,7 @@ func PeriodicFetch(owner, repo, _ string) error {
 
 	c := cron.New()
 
-	ownerRepo := owner + "/" + repo
+	ownerRepo := fmt.Sprintf("%s/%s", owner, repo)
 
 	// Construct the base URL for fetching commits
 	baseURL := fmt.Sprintf("https://api.github.com/repos/%s/commits", ownerRepo)
