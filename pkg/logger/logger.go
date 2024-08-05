@@ -54,3 +54,10 @@ func InitLogger(logToFileAndTerminal bool) {
 	ErrorLogger = log.New(errorWriter, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
 
 }
+
+func CleanLogs() {
+	// logDir := filepath.Join("logs", time.Now().Format("2006-01-02"))
+	if err := os.RemoveAll("logs"); err != nil {
+		log.Fatal("Failed to remove log directory:", err)
+	}
+}
