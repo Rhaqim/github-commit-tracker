@@ -2,10 +2,13 @@ package github
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 
+	"github.com/Rhaqim/savannahtech/internal/api/github/types"
 	"github.com/Rhaqim/savannahtech/internal/core/entities"
+	"github.com/Rhaqim/savannahtech/old/utils"
 )
 
 // GetRepositoryCommit fetches a commit of a repository.
@@ -29,4 +32,31 @@ func (c *Client) GetRepositoryCommit(ctx context.Context, owner, repo, sha strin
 	}
 
 	return &commit, nil
+}
+
+func FetchCommits(url string, commitsChan chan<- []types.Commit) error {
+
+	for {
+		resp, err := fetchWithBackoff(url)
+		if err != nil {
+			return err
+		}
+		defer resp.Body.Close()
+
+		data := []types.Commit{}
+		if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
+			return fmt.Errorf("failed to unmarshal data: %w", err)
+		}
+
+		commitsChan <- data
+
+		nextURL := utils.GetNextPageURL(resp.Header.Get("Link"))
+		if nextURL == "" {
+			break
+		}
+
+		url = nextURL
+	}
+
+	return nil
 }

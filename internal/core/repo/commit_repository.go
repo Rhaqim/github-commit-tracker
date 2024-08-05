@@ -15,6 +15,13 @@ func NewCommitRepo(db *gorm.DB) *CommitRepo {
 	return &CommitRepo{db: db}
 }
 
+func (c *CommitRepo) CreateCommits(commit []entities.Commit) error {
+	if err := c.db.Create(&commit).Error; err != nil {
+		return fmt.Errorf("error creating commit: %w", err)
+	}
+	return nil
+}
+
 func (c *CommitRepo) GetCommitsByRepository(repoName string, limit, offset int) ([]entities.Commit, error) {
 	var commits []entities.Commit
 	if err := c.db.Joins("JOIN repository_stores ON repository_stores.owner_repository = commit_stores.owner_repository").

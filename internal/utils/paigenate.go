@@ -1,6 +1,9 @@
 package utils
 
-import "strconv"
+import (
+	"strconv"
+	"strings"
+)
 
 func Paigenation(pageStr, sizeStr string) (int, int) {
 	// Default values
@@ -23,4 +26,27 @@ func Paigenation(pageStr, sizeStr string) (int, int) {
 	offset := (page - 1) * size
 
 	return size, offset
+}
+
+/*
+Helper function to get the next page URL from the "Link" header
+
+Example of "Link" header: <https://api.github.com/repositories/1/commits?page=2>; rel="next", <https://api.github.com/repositories/1/commits?page=3>; rel="last"
+*/
+func GetNextPageURL(linkHeader string) string {
+	if linkHeader == "" {
+		return ""
+	}
+
+	links := strings.Split(linkHeader, ",")
+	for _, link := range links {
+		parts := strings.Split(strings.TrimSpace(link), ";")
+
+		if len(parts) == 2 && strings.TrimSpace(parts[1]) == `rel="next"` {
+			url := strings.Trim(parts[0], "<>")
+			return url
+		}
+	}
+
+	return ""
 }
