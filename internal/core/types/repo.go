@@ -29,6 +29,7 @@ type Owner struct {
 	SiteAdmin         bool   `json:"site_admin"`
 }
 
+// GitHub Repository
 type Repository struct {
 	ID                       int      `json:"id"`
 	NodeID                   string   `json:"node_id"`

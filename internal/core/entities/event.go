@@ -8,6 +8,7 @@ const (
 	PeriodEvent EventType = "period"
 )
 
+// Event represents the event queue data.
 type Event struct {
 	Owner     string    `json:"owner"`
 	Repo      string    `json:"repo"`

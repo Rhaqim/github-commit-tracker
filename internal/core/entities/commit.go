@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// Commit represents the apllication commit entity.
 type Commit struct {
 	gorm.Model
 	SHA             string    `json:"sha"`
@@ -16,6 +17,7 @@ type Commit struct {
 	OwnerRepository string    `json:"owner_repository,omitempty"`
 }
 
+// CommitCount is a return type for the Top N Authors.
 type CommitCount struct {
 	Author      string
 	CommitCount int

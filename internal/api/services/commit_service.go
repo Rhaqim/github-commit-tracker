@@ -36,6 +36,13 @@ func FetchTopNCommitAuthors(n string) ([]entities.CommitCount, error) {
 	return repositories.CommitStore.GetTopNCommitAuthors(nInt)
 }
 
+/*
+ProcessCommitData fetches commit data for a repository.
+
+receives the owner, repo, and startDate as arguments.
+
+It fetches the commit data from the GitHub API and stores it in the database.
+*/
 func ProcessCommitData(owner, repo, startDate string) error {
 	var err error
 
@@ -108,6 +115,9 @@ func PeriodicFetch(owner, repo string) error {
 	return nil
 }
 
+/*
+processCommit fetches commit data from the GitHub API and stores it in the database.
+*/
 func processCommit(url, ownerRepo string) error {
 	commitsChan := make(chan []types.Commit)
 
@@ -141,6 +151,9 @@ func processCommit(url, ownerRepo string) error {
 	return nil
 }
 
+/*
+convertCommitType converts the commit type from the GitHub API to the Commit type used in the application.
+*/
 func convertCommitType(commits []types.Commit, ownerRepo string) []entities.Commit {
 	var wg sync.WaitGroup
 

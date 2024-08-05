@@ -18,11 +18,9 @@ type AppConfig struct {
 }
 
 var (
-	config *AppConfig
+	Config *AppConfig
 	once   sync.Once
 )
-
-var Config *AppConfig
 
 func LoadConfig() {
 	once.Do(func() {
@@ -31,7 +29,7 @@ func LoadConfig() {
 			logger.ErrorLogger.Printf("Error loading .env file")
 		}
 
-		config = &AppConfig{
+		Config = &AppConfig{
 			ServerPort:       os.Getenv("SERVER_PORT"),
 			DatabaseURL:      os.Getenv("DATABASE_URL"),
 			DefaultOwner:     os.Getenv("DEFAULT_OWNER"),
@@ -41,5 +39,4 @@ func LoadConfig() {
 		}
 	})
 
-	Config = config
 }

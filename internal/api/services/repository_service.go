@@ -43,6 +43,13 @@ func ProcessRepository(owner, repo, startDate string) error {
 	return handleExistingRepository(repo_, owner, repo, startDate)
 }
 
+/*
+handleNewRepository handles the case where the repository is new.
+
+It fetches the repository data from the GitHub API and stores it in the database.
+
+It also publishes an event to the event queue indicating that the repository data has been fetched.
+*/
 func handleNewRepository(url, owner, repo, startDate string) error {
 	logger.InfoLogger.Printf("Handling new repository %s/%s\n", owner, repo)
 
@@ -72,6 +79,11 @@ func handleNewRepository(url, owner, repo, startDate string) error {
 	return nil
 }
 
+/*
+handleExistingRepository handles the case where the repository already exists.
+
+It checks if the repository is indexed and sends the appropriate event to the event queue.
+*/
 func handleExistingRepository(repo_ entities.Repository, owner, repo, startDate string) error {
 	logger.InfoLogger.Printf("Handling existing repository %s/%s\n", owner, repo)
 
@@ -104,6 +116,9 @@ func handleExistingRepository(repo_ entities.Repository, owner, repo, startDate 
 	return nil
 }
 
+/*
+convertRepositoryType converts the repository type from the API to the internal repository type.
+*/
 func convertRepositoryType(repo_ types.Repository, ownerRepo string) entities.Repository {
 	var repo entities.Repository = entities.Repository{
 		Name:            repo_.Name,
@@ -121,6 +136,13 @@ func convertRepositoryType(repo_ types.Repository, ownerRepo string) entities.Re
 	return repo
 }
 
+/*
+LoadStartupRepo loads the startup repository.
+
+the configuration from the .env file is used to determine the repository to load.
+
+It sends an event to the event queue to fetch the repository data.
+*/
 func LoadStartupRepo() {
 	// wait for 2 seconds to allow the event listeners to start
 	<-time.After(2 * time.Second)

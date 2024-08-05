@@ -72,6 +72,7 @@ type Author struct {
 	SiteAdmin         bool   `json:"site_admin"`
 }
 
+// Github Commit
 type Commit struct {
 	Url         string    `json:"url"`
 	Sha         string    `json:"sha"`

@@ -6,6 +6,7 @@ import (
 	"github.com/Rhaqim/savannahtech/internal/core/entities"
 )
 
+// RunMigrations runs the database migrations
 func RunMigrations() {
 	err := DB.AutoMigrate(&entities.Repository{}, &entities.Commit{})
 	if err != nil {

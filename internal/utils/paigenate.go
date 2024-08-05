@@ -5,6 +5,11 @@ import (
 	"strings"
 )
 
+/*
+Paigenation parses the page and size query parameters and returns the size and offset values.
+
+If the page or size is not provided or invalid, it uses the default values (page=1, size=10).
+*/
 func Paigenation(pageStr, sizeStr string) (int, int) {
 	// Default values
 	page := 1

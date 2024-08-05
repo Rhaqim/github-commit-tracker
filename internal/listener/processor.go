@@ -9,6 +9,9 @@ import (
 	"github.com/Rhaqim/savannahtech/pkg/logger"
 )
 
+/*
+ProcessFunc processes the event based on the event type.
+*/
 func ProcessFunc(event entities.Event) error {
 	owner_, repo_, startDate_ := event.Owner, event.Repo, event.StartDate
 

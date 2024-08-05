@@ -2,6 +2,7 @@ package entities
 
 import "gorm.io/gorm"
 
+// Repository represents the application repository entity.
 type Repository struct {
 	gorm.Model
 	Name            string `json:"name"`

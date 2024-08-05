@@ -10,6 +10,9 @@ var (
 	ErrorChan = make(chan error, 1)
 )
 
+/*
+StartEventListener starts the event listener that listens for events on the EventChan and processes them using the provided processFunc.
+*/
 func StartEventListener(processFunc func(event entities.Event) error) {
 	go func() {
 		for event := range EventChan {
@@ -35,6 +38,9 @@ func StartEventListener(processFunc func(event entities.Event) error) {
 	logger.InfoLogger.Println("Event listeners started")
 }
 
+/*
+SendEvent sends an event to the EventChan.
+*/
 func SendEvent(event entities.Event) {
 	EventChan <- event
 }

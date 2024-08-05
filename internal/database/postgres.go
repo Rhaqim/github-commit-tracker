@@ -13,6 +13,7 @@ import (
 
 var DB *gorm.DB // Global database connection
 
+// InitDB initializes the database connection
 func InitDB() {
 	dsn := config.Config.DatabaseURL
 
