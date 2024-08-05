@@ -27,3 +27,10 @@ func (r *RepositoryRepo) GetRepositoryByOwnerRepo(ownerRepo string) (entities.Re
 	}
 	return repo, nil
 }
+
+func (r *RepositoryRepo) UpdateRepositoryIndexed(ownerRepo string) error {
+	if err := r.db.Model(&entities.Repository{}).Where("owner_repository = ?", ownerRepo).Update("indexed", true).Error; err != nil {
+		return err
+	}
+	return nil
+}

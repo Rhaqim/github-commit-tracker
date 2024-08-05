@@ -33,11 +33,11 @@ func FetchTopNCommitAuthors(n string) ([]entities.CommitCount, error) {
 func ProcessCommitData(event_ entities.Event) error {
 	var err error
 
-	if event_.Type != entities.CommitEvent {
-		return nil
-	}
-
 	var owner, repo, start_date string = event_.Owner, event_.Repo, event_.StartDate
+
+	if event_.Type != entities.CommitEvent {
+		return PeriodicFetch(owner, repo, start_date)
+	}
 
 	ownerRepo := fmt.Sprintf("%s/%s", owner, repo)
 
@@ -52,35 +52,14 @@ func ProcessCommitData(event_ entities.Event) error {
 		return fmt.Errorf("failed to process commit data: %w", err)
 	}
 
-	// send event to the event queue using go channel
+	logger.InfoLogger.Printf("Completed initial commit fetching for %s/%s\n", owner, repo)
 
-	return err
-}
-
-func convertCommitType(commits []types.Commit, ownerRepo string) []entities.Commit {
-	var wg sync.WaitGroup
-
-	commitStores := make([]entities.Commit, len(commits))
-
-	for i, commit := range commits {
-		wg.Add(1)
-		go func(commit types.Commit, i int) {
-			defer wg.Done()
-			commitStores[i] = entities.Commit{
-				SHA:             commit.Sha,
-				Author:          commit.Commit.Committer.Name,
-				Message:         commit.Commit.Message,
-				Date:            commit.Commit.Committer.Date,
-				URL:             commit.Commit.Url,
-				OwnerRepository: ownerRepo,
-			}
-		}(commit, i)
+	err = PeriodicFetch(owner, repo, start_date)
+	if err != nil {
+		return fmt.Errorf("failed to start periodic commit fetching: %w", err)
 	}
 
-	wg.Wait()
-
-	return commitStores
-
+	return err
 }
 
 /*
@@ -100,7 +79,7 @@ func PeriodicFetch(owner, repo, _ string) error {
 	ownerRepo := owner + "/" + repo
 
 	// Construct the base URL for fetching commits
-	baseURL := fmt.Sprintf("https://api.github.com//repos/%s/commits", ownerRepo)
+	baseURL := fmt.Sprintf("https://api.github.com/repos/%s/commits", ownerRepo)
 
 	c.AddFunc(fmt.Sprintf("@every %s", interval), func() {
 		// Get the last commit SHA stored
@@ -139,6 +118,10 @@ func processCommit(url, ownerRepo string) error {
 	for commit := range commitsChan {
 		logger.InfoLogger.Println("Received commits: " + strconv.Itoa(len(commit)) + " for " + ownerRepo)
 
+		if len(commit) == 0 {
+			break
+		}
+
 		commits := convertCommitType(commit, ownerRepo)
 
 		if err := repositories.CommitStore.CreateCommits(commits); err != nil {
@@ -146,5 +129,36 @@ func processCommit(url, ownerRepo string) error {
 		}
 	}
 
+	err := repositories.RepoStore.UpdateRepositoryIndexed(ownerRepo)
+	if err != nil {
+		return fmt.Errorf("failed to update repository: %w", err)
+	}
+
 	return nil
+}
+
+func convertCommitType(commits []types.Commit, ownerRepo string) []entities.Commit {
+	var wg sync.WaitGroup
+
+	commitStores := make([]entities.Commit, len(commits))
+
+	for i, commit := range commits {
+		wg.Add(1)
+		go func(commit types.Commit, i int) {
+			defer wg.Done()
+			commitStores[i] = entities.Commit{
+				SHA:             commit.Sha,
+				Author:          commit.Commit.Committer.Name,
+				Message:         commit.Commit.Message,
+				Date:            commit.Commit.Committer.Date,
+				URL:             commit.Commit.Url,
+				OwnerRepository: ownerRepo,
+			}
+		}(commit, i)
+	}
+
+	wg.Wait()
+
+	return commitStores
+
 }

@@ -3,7 +3,7 @@ package entities
 type EventType string
 
 const (
-	PeriodEvnt  EventType = "Period"
+	PeriodEvnt  EventType = "period"
 	CommitEvent EventType = "commit"
 )
 
