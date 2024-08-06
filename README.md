@@ -167,8 +167,6 @@ go test -v ./internal/test/...
 
 The following improvements are planned for future releases:
 
-- Dependency injection
-- Caching last fetched date before interruption
 - Restart the period fetcher for all repositories in the database
 - Fetch multiple repositories at once on startup
 
