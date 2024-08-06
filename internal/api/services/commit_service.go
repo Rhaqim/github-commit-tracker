@@ -80,7 +80,7 @@ It uses a cron job to fetch commit data at a specified interval.
 
 It fetches the commit data from the GitHub API and stores it in the database.
 */
-func PeriodicFetch(owner, repo string) error {
+func PeriodicFetch(owner, repo string) {
 	interval := config.Config.RefetchInterval
 
 	logger.InfoLogger.Printf("Checking new commits for %s/%s every %s\n", owner, repo, interval)
@@ -112,7 +112,6 @@ func PeriodicFetch(owner, repo string) error {
 	})
 	c.Start()
 
-	return nil
 }
 
 /*

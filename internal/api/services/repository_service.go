@@ -40,7 +40,9 @@ func ProcessRepository(owner, repo, startDate string) error {
 		return err
 	}
 
-	return handleExistingRepository(repo_, owner, repo, startDate)
+	handleExistingRepository(repo_, owner, repo, startDate)
+
+	return nil
 }
 
 /*
@@ -84,7 +86,7 @@ handleExistingRepository handles the case where the repository already exists.
 
 It checks if the repository is indexed and sends the appropriate event to the event queue.
 */
-func handleExistingRepository(repo_ entities.Repository, owner, repo, startDate string) error {
+func handleExistingRepository(repo_ entities.Repository, owner, repo, startDate string) {
 	logger.InfoLogger.Printf("Handling existing repository %s/%s\n", owner, repo)
 
 	if repo_.Indexed {
@@ -99,8 +101,6 @@ func handleExistingRepository(repo_ entities.Repository, owner, repo, startDate 
 		}
 
 		events.SendEvent(event)
-
-		return nil
 	}
 
 	// Publish new repository event if not indexed
@@ -112,8 +112,6 @@ func handleExistingRepository(repo_ entities.Repository, owner, repo, startDate 
 	}
 
 	events.SendEvent(event)
-
-	return nil
 }
 
 /*

@@ -12,7 +12,7 @@ import (
 /*
 ProcessFunc processes the event based on the event type.
 */
-func ProcessFunc(event entities.Event) error {
+func ProcessFunc(event entities.Event) {
 	owner_, repo_, startDate_ := event.Owner, event.Repo, event.StartDate
 
 	owner, repo := strings.ToLower(owner_), strings.ToLower(repo_)
@@ -40,11 +40,7 @@ func ProcessFunc(event entities.Event) error {
 	// Process periodic fetch event
 	if event.Type == entities.PeriodEvent {
 		go func() {
-			if err := services.PeriodicFetch(owner, repo); err != nil {
-				logger.ErrorLogger.Println("Failed to process periodic fetch:", err)
-			}
+			services.PeriodicFetch(owner, repo)
 		}()
 	}
-
-	return nil
 }
