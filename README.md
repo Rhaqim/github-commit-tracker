@@ -11,7 +11,7 @@ GitHub Commit Tracker is an application designed to fetch and store commit data 
   - [Prerequisites](#prerequisites)
   - [How to Run GitHub Commit Tracker](#how-to-run-github-commit-tracker)
     - [Run with Docker Compose](#run-with-docker-compose)
-    - [Run without Docker Compose](#run-without-docker-compose)
+    - [Run directly without Docker Compose](#run-directly-without-docker-compose)
   - [Usage](#usage)
     - [Fetching and Storing Commits](#fetching-and-storing-commits)
     - [Top Commit Author](#top-commit-author)
@@ -70,6 +70,12 @@ cd savannahtech
 
 ### Run with Docker Compose
 
+- **Build the Docker image:**
+
+```bash
+docker-compose build
+```
+
 - **Start the application:**
 
 ```bash
@@ -78,7 +84,9 @@ docker-compose up -d
 
 This will start the application and the PostgreSQL database in the background. It will run with the default configuration in the .env file.
 
-### Run without Docker Compose
+### Run directly without Docker Compose
+
+You will need to have a PostgreSQL database running and set the DATABASE_URL environment variable in the .env file.
 
 - **Install Dependencies:**
 
