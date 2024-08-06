@@ -23,7 +23,7 @@ GitHub Commit Tracker is an application designed to fetch and store commit data 
   
 ## System Architecture
 
-The GitHub Commit Tracker system is designed with a modular architecture that includes the following components:
+The GitHub Commit Tracker system is designed with a modular, clean architecture pattern with a focus on separation of concerns and maintainability that includes the following components:
 
 ![System Architecture](architecture.jpg)
 
