@@ -12,6 +12,6 @@ func RequestLogger() gin.HandlerFunc {
 		startTime := time.Now()
 		c.Next()
 		endTime := time.Now()
-		logger.ErrorLogger.Printf("[%s] %s %s %d %s\n", endTime.Format(time.RFC3339), c.Request.Method, c.Request.URL.Path, c.Writer.Status(), endTime.Sub(startTime))
+		logger.InfoLogger.Printf("[%s] %s %s %d %s\n", endTime.Format(time.RFC3339), c.Request.Method, c.Request.URL.Path, c.Writer.Status(), endTime.Sub(startTime))
 	}
 }

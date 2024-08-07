@@ -13,6 +13,8 @@ import (
 ProcessFunc processes the event based on the event type.
 */
 func ProcessFunc(event entities.Event) {
+	logger.InfoLogger.Printf("Starting processing for event: %v", event)
+
 	owner_, repo_, startDate_ := event.Owner, event.Repo, event.StartDate
 
 	owner, repo := strings.ToLower(owner_), strings.ToLower(repo_)
@@ -20,25 +22,20 @@ func ProcessFunc(event entities.Event) {
 	startDate := utils.ValidateDate(startDate_)
 
 	// Process repository event
-	if event.Type == entities.RepoEvent {
+	switch event.Type {
+	case entities.RepoEvent:
 		go func() {
 			if err := services.ProcessRepository(owner, repo, startDate); err != nil {
 				logger.ErrorLogger.Println("Failed to process repository:", err)
 			}
 		}()
-	}
-
-	// Process commit event
-	if event.Type == entities.CommitEvent {
+	case entities.CommitEvent:
 		go func() {
 			if err := services.ProcessCommitData(owner, repo, startDate); err != nil {
 				logger.ErrorLogger.Println("Failed to process commit data:", err)
 			}
 		}()
-	}
-
-	// Process periodic fetch event
-	if event.Type == entities.PeriodEvent {
+	case entities.PeriodEvent:
 		go func() {
 			services.PeriodicFetch(owner, repo)
 		}()

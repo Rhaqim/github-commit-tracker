@@ -15,6 +15,7 @@ type AppConfig struct {
 	DefaultRepo      string
 	DefaultStartDate string
 	RefetchInterval  string
+	GithubRepoURL    string
 }
 
 var (
@@ -36,6 +37,7 @@ func LoadConfig() {
 			DefaultRepo:      os.Getenv("DEFAULT_REPO"),
 			DefaultStartDate: os.Getenv("DEFAULT_START_DATE"),
 			RefetchInterval:  os.Getenv("REFETCH_INTERVAL"),
+			GithubRepoURL:    "https://api.github.com/repos",
 		}
 	})
 

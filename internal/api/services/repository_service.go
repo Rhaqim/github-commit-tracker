@@ -29,7 +29,7 @@ It also publishes an event to the event queue indicating that the repository dat
 */
 func ProcessRepository(owner, repo, startDate string) error {
 
-	url := fmt.Sprintf("https://api.github.com/repos/%s/%s", owner, repo)
+	url := fmt.Sprintf("%s/%s/%s", config.Config.GithubRepoURL, owner, repo)
 
 	// Check if the repository exists in the store
 	repo_, err := FetchRepositoryByOwnerRepo(owner, repo)
@@ -101,17 +101,18 @@ func handleExistingRepository(repo_ entities.Repository, owner, repo, startDate 
 		}
 
 		events.SendEvent(event)
+	} else {
+		// Publish new repository event if not indexed
+		event := entities.Event{
+			StartDate: startDate,
+			Type:      entities.CommitEvent,
+			Owner:     owner,
+			Repo:      repo,
+		}
+
+		events.SendEvent(event)
 	}
 
-	// Publish new repository event if not indexed
-	event := entities.Event{
-		StartDate: startDate,
-		Type:      entities.CommitEvent,
-		Owner:     owner,
-		Repo:      repo,
-	}
-
-	events.SendEvent(event)
 }
 
 /*

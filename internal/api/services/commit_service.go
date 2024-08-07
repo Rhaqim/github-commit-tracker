@@ -48,7 +48,7 @@ func ProcessCommitData(owner, repo, startDate string) error {
 
 	ownerRepo := fmt.Sprintf("%s/%s", owner, repo)
 
-	url := fmt.Sprintf("https://api.github.com/repos/%s/commits", ownerRepo)
+	url := fmt.Sprintf("%s/%s/commits", config.Config.GithubRepoURL, ownerRepo)
 
 	if startDate != "" {
 		url += "?since=" + startDate
@@ -57,6 +57,11 @@ func ProcessCommitData(owner, repo, startDate string) error {
 	err = processCommit(url, ownerRepo)
 	if err != nil {
 		return fmt.Errorf("failed to process commit data: %w", err)
+	}
+
+	err = repositories.RepoStore.UpdateRepositoryIndexed(ownerRepo)
+	if err != nil {
+		return fmt.Errorf("failed to update repository: %w", err)
 	}
 
 	logger.InfoLogger.Printf("Completed initial commit fetching for %s/%s\n", owner, repo)
@@ -90,7 +95,7 @@ func PeriodicFetch(owner, repo string) {
 	ownerRepo := fmt.Sprintf("%s/%s", owner, repo)
 
 	// Construct the base URL for fetching commits
-	baseURL := fmt.Sprintf("https://api.github.com/repos/%s/commits", ownerRepo)
+	baseURL := fmt.Sprintf("%s/%s/commits", config.Config.GithubRepoURL, ownerRepo)
 
 	c.AddFunc(fmt.Sprintf("@every %s", interval), func() {
 		// Get the last commit SHA stored
@@ -140,11 +145,6 @@ func processCommit(url, ownerRepo string) error {
 		if err := repositories.CommitStore.CreateCommits(commits); err != nil {
 			return fmt.Errorf("failed to store commits: %w", err)
 		}
-	}
-
-	err := repositories.RepoStore.UpdateRepositoryIndexed(ownerRepo)
-	if err != nil {
-		return fmt.Errorf("failed to update repository: %w", err)
 	}
 
 	return nil
