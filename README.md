@@ -160,7 +160,7 @@ If an error occurs during the execution of the application, it will return a 500
 All the tests are located in the `internal/test` directory. To run the tests, use the following command:
 
 ```bash
-go test -v ./internal/test/...
+go test ./...
 ```
 
 ## Feature Improvements
